@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .haha {
+            width:300px;
+            height: 20px;
+            border: 1px solid red;
+        }
+    </style>
+</head>
+<body>
+    <textarea type="confirm" class="haha"></textarea>
+    <input type="text" onkeyup="" id="input">
+    <input type="search">
+    <input type="confirm">
+    <input type="submit">
+    <div contenteditable="true" class="haha">
+
+    </div>
+
+</body>
+<script>
+    var input = document.getElementById('input');
+    input.onkeyup = function handleKeyUp(e){
+        console.log(e,'up')
+        alert(e.keyCode);
+    }
+    // input.onkeypress = function handleKeypress(e){
+    //     console.log(e,'press')
+    //     alert(e.keyCode);
+    // }
+    input.onkeydown = function handleKeydown(e){
+        console.log(e,'down')
+        alert(e.keyCode);
+    }
+    
+</script>
+</html>

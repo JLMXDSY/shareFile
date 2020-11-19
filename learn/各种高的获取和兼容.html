@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .dadada {
+            width: 500px;
+            height: 700px;
+            background: red;
+            /* position: absolute; */
+        }
+        .zhanwei {
+            width: 300px;
+            height: 200px;
+            background: green;
+        }
+        #zi {
+            width:300px ;
+            height: 400px;
+            background: greenyellow;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        #fu {
+            width: 400px;
+            height: 650px;
+            background: hotpink;
+            /* position: absolute; */
+        }
+    </style>
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+</head>
+<body>
+    <div class="dadada">
+        <div class="zhanwei"></div>
+        <div id="fu">
+            <div class="zhanwei"></div>
+            <div id="zi">zi</div>
+        </div>
+    </div>
+</body>
+<script>
+    $(window).scroll(function () {
+        console.log(window.scrollY, window.pageYOffset, document.documentElement.scrollTop, document.body.scrollTop);
+        // chrome下document.body.scrollTop值恒为0
+        console.log($(window).scrollTop(), $("html,body").scrollTop(), $(document).scrollTop());
+        console.log(document.body.clientHeight,document.body.offsetHeight,document.body.scrollTop,document.body.scrollHeight)
+    })
+    $(function(){
+        var zi = document.getElementById('zi')
+        console.log(zi.offsetLeft,zi.offsetTop,zi.offsetParent,'---')
+    })
+</script>
+
+</html>

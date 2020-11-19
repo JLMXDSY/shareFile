@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            text-decoration: none;
+            list-style: none;
+        }
+        body{background-color:#f7f9fa}
+        .wrapper{position:relative;-webkit-overflow-scrolling: touch; height: 100vh}
+        .wrapper .pullDownText {line-height: 50px; text-align: center;}
+        .wrapper .box {position: absolute;top:0;width: 100%;z-index:1000}
+        .wrapper .box .list {background:#fff;}
+        .wrapper .box .list .line {
+            border-bottom:1px solid #dcdcdc; padding: 8px 10px;
+        }
+        .wrapper .pullUpText {line-height: 50px; text-align: center; font-size: 14px; position: fixed; width: 100%; bottom: 0;}
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <p class="pullDownText"></p>
+        <div class="box">
+            <ul class="list">
+                <li class="line">
+                    <p class="title">实现上拉功能</p>
+                    <p class="content">睡觉啊了肯德基</p>
+                </li>
+                <li class="line">
+                    <p class="title">实现上拉功能</p>
+                    <p class="content">睡觉啊了肯德基</p>
+                </li>
+                <li class="line">
+                    <p class="title">实现上拉功能</p>
+                    <p class="content">睡觉啊了肯德基</p>
+                </li>
+                <li class="line">
+                    <p class="title">实现上拉功能</p>
+                    <p class="content">睡觉啊了肯德基</p>
+                </li>
+                <li class="line">
+                    <p class="title">实现上拉功能</p>
+                    <p class="content">睡觉啊了肯德基</p>
+                </li>
+                <li class="line">
+                    <p class="title">实现上拉功能</p>
+                    <p class="content">睡觉啊了肯德基</p>
+                </li>
+
+            </ul> 
+        </div>
+        <p class="pullUpText"></p>
+    </div>
+</body>
+<script src="common/jquery3.4.0.js"></script>
+<script>
+    var startY, // 手指接触屏幕时的位置
+        moveY, // 手指滑动后的位置
+        initTop, // box初始位置
+        transformHeight, // 手指滑动的距离
+        transformTop, // 盒子应该滑动的距离
+        documentHeight; //文档的高度
+    var refreshHeight = 50; // 滑动到最大距离开始刷新，默认50
+    var clientHeight = $(window).height(); // 屏幕可视区域高度
+    $('.box').on('touchstart',function(event){
+        initTop = parseInt($(this).css('top'));
+        startY = event.originalEvent.touches[0].pageY;
+        documentHeight = $(document).height();
+        console.log(initTop,startY,documentHeight);
+
+    })
+    $('.box').on('touchmove',function(event){
+        moveY = event.originalEvent.touches[0].pageY;
+        transformHeight = moveY - startY;
+        transformTop = moveY - startY +initTop; // 拖动距离
+        $(this).animate({top:transformTop+'px'},0);
+        if(transformTop>0){
+            $('.pullDownText').html('下拉更新')
+            if(transformTop > (refreshHeight - 5)){
+                $('.pullDownText').html('释放刷新')
+            }
+        }
+        if(transformHeight < 0 && documentHeight + transformTop < clientHeight) {
+            $('.pullUpText').html('上拉加载')
+            if(documentHeight + transformTop < clientHeight-50){
+            $('.pullUpText').html('释放加载')
+
+            }
+        }
+    })
+    $('.box').on('touchend',function(event){
+        var html = getData();
+        if(transformTop >0 ){
+            transformTop = transformTop > refreshHeight ? refreshHeight : transformTop
+            $(this).animate({top:transformTop+'px'},300, function(){
+                $(this).delay(1000).animate({top:'0px'},800);
+                if(transformTop > (refreshHeight - 5)){
+                    $('.pullDownText').html('更新中...');
+                    $('.list').empty().append(html);
+                }
+            })
+        }
+        if(transformHeight < 0 && documentHeight + transformTop < clientHeight) {
+            transformTop = $('.list').height();
+            $(this).animate({bottom:0+'px'},300,function(){
+                $('.pullUpText').html('加载中...')
+                $('.list').append(html)
+            })
+        }
+    })
+    function getData(){
+        var i,html;
+        var listData = '';
+        var count = 10;
+        for(i =0; i<count; i++){
+            html =` <li class="line">
+                    <p class="title">实现上拉功能</p>
+                    <p class="content">睡觉啊了肯德基</p>
+                </li>`
+            listData += html;
+        }
+        return listData;
+    }
+</script>
+</html>

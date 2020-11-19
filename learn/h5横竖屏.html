@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="common/base.css">
+    <script src="common/jquery1.7.0.min.js"></script>
+    <style>
+        .box {
+            width: 100%;
+            height: 100%;
+        }
+
+        img {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 横竖屏不同样式 第一种 */
+        /* @media all and (orientation : landscape) {
+
+            body {
+                background-color: #ff0000;
+            }
+        }
+
+        @media all and (orientation : portrait) {
+
+            body {
+                background-color: #00ff00;
+            }
+        } */
+
+        /* 横竖屏不同样式 第二种  */
+        body[orient=landscape] {
+            background-color: #ff0000;
+        }
+
+        body[orient=portrait] {
+            background-color: #00ffff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box">
+        <img src="image/img1.jpg" alt="">
+    </div>
+</body>
+<script>
+    /**
+     * 判断屏幕方向
+     */
+        // 第一种
+        // function orientationChange() {
+        //     switch (window.orientation) {
+        //         case 0:
+        //             console.log('竖屏，screenWidth:' + screen.width + ';screenHeight:' + screen.height);
+        //             break;
+        //         case -90:
+        //             console.log('左旋90，screenWidth:' + screen.width + ';screenHeight:' + screen.height);
+        //             break;
+        //         case 90:
+        //             console.log('右旋90，screenWidth:' + screen.width + ';screenHeight:' + screen.height);
+        //             break;
+        //     }
+        // }
+        // // 添加判断屏幕方向事件监听
+        //     orientationChange()
+        //     // window.onorientationchange 在每次屏幕方向在横竖屏间切换后，就会触发这个window事件
+                // window.onorientationchange = orientationChange;
+        
+        // 第二种
+        // （和第一种一样，加了一个兼容判断，看看浏览器有没有onorientationchange事件,在窗口大小改变之后,就会触发resize事件）
+        //判断手机横竖屏状态：  
+        window.addEventListener("onorientationchange" in window ? "orientationchange" : "resize", function() {  
+            if (window.orientation === 180 || window.orientation === 0) {   
+               console.log('竖屏'); 
+            }   
+            if (window.orientation === 90 || window.orientation === -90 ){   
+                console.log('横屏'); 
+            }    
+        }, false); 
+
+        // 在窗口大小改变之后,就会触发resize事件(练习resize)
+        window.addEventListener('resize',function(){
+            console.log('screenWidth:' + screen.width + ';screenHeight:' + screen.height);
+        })
+
+
+
+    /**
+     * 横竖屏实现不同的样式
+     */
+
+        // 第一种 css样式
+
+        //  第二种 
+        // $(function(){
+        //     if (window.orientation == 0) {
+        //         document.body.setAttribute("orient", "portrait");
+        //     } else {
+        //         document.body.setAttribute("orient", "landscape");
+        //     }
+        //     function orientationChange() {  
+        //         var body = document.body;
+        //         console.log(body.getAttribute);
+        //         if (body.getAttribute("orient") == "landscape") {
+        //             body.setAttribute("orient", "portrait");
+        //         } else {
+        //             body.setAttribute("orient", "landscape");
+        //         }
+        //     };
+        //     window.onorientationchange = orientationChange
+        // })
+    
+    /**
+     *  h5强制横屏显示
+     */
+
+        function horizontalScreen(className){
+            // transform 强制横屏
+            var conW = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+            var conH = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+            // transform: rotate(90deg); width: 667px; height: 375px;transform-origin:28% 50%;
+            //var iosTopHe = 0;//若有其他样式判断，写于此
+            
+            $('body').css({
+                "transform":"rotate(90deg) translate("+((conH-conW)/2)+"px,"+((conH-conW)/2)+"px)",
+                "width":conH+"px",
+                "height":conW+"px",
+                //"margin-top":iosTopHe+"px",
+                // "border-left":iosTopHe+"px solid #000",
+                "transform-origin":"center center",
+                "-webkit-transform-origin": "center center"
+            });
+        }
+        horizontalScreen()
+
+        
+
+
+
+
+
+
+
+</script>
+
+</html>

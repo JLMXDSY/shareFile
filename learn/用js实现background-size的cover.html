@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        html,
+        body {
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .box {
+            width: 100%;
+            height: 100%;
+            background: gold;
+            position: relative;
+        }
+        .contain{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+        }
+        .contain img{
+            height: 100%;
+            width:100%;
+
+        }
+    </style>
+    <script src="common/jquery3.4.0.js"></script>
+</head>
+
+<body>
+    <div class="box">
+        <!-- <img src="http://www.forestry.gov.cn/uploadfile/main/2013-6/image/2013-6-19-dbdb3e3f20b644ec959960e9d8308eda.jpg" alt=""> -->
+        <div class="contain">
+        </div>
+    </div>
+</body>
+<script>
+    // 获取屏幕的宽高比
+    var _screenR = window.innerWidth / window.innerHeight;
+    console.log(_screenR);
+
+    // 加载图片
+    var preloadImage = function (path) {
+        return new Promise(function (resolve, reject) {
+            var img = new Image();
+            img.onload = resolve;
+            img.onerror = reject;
+            img.src = path;
+            return 'tupian'
+        })
+    }
+    preloadImage('image/contain.jpeg').then(function (e) {
+        // 获取图片的宽高比
+        var imgR = e.path[0].width / e.path[0].height;
+        console.log(e.path[0].width, e.path[0].height,imgR,e.target);
+        
+        if(imgR > _screenR){
+            $('.contain').width(window.innerWidth)
+            $('.contain').height(window.innerWidth / imgR)
+        }else if(imgR === _screenR){
+            $('.contain').width(window.innerWidth)
+            $('.contain').height(window.innerHeight)
+        }else if(imgR < _screenR){
+            $('.contain').width(window.innerHeight * imgR)
+            $('.contain').height(window.innerHeight)
+        }
+        $('.contain').append(e.target)
+    }).catch((e) => {
+        console.log('图片加载失败',e)
+    })
+</script>
+
+</html>
