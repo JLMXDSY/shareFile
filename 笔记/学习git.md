@@ -168,7 +168,7 @@ https://www.cnblogs.com/cposture/p/4178003.html 详细介绍工作区/暂存区/
 
 工作目录（working tree） \= git add . => 暂存区（.git/index文件） \=git commit -m '' => 本地仓库(.git/object)
 
-![图片](https://www.liaoxuefeng.com/files/attachments/919020037470528/0)
+![图片](https://www.runoob.com/wp-content/uploads/2015/02/1352126739_7909.jpg)
 
 > 8. git撤销修改
 
@@ -477,4 +477,12 @@ git log originName/branch
 // 把指定提交应用到当前分支
 git cherry-pick <commitHash>
 ```
+
+
+
+### git checkout
+
+### git reset
+
+### git revert
 
