@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <button id="haha" onclick="dianji()">anniu</button>
+</body>
+<script>
+    let haha = document.getElementById('haha');
+    let dianji = function(e){
+        console.log(this,'=======');
+    }
+    haha.onclick=dianji
+    haha.addEventListener('click',dianji)
+    console.log(window,typeof window.haha);
+
+
+    // // yi
+    // function haha() {
+    //     console.log(this, 'haha');
+    // }
+    // function huidiao(diao) {
+    //     diao(); // window
+    //     obj.a() // obj
+    // }
+    // var obj = { a: haha }
+    // huidiao(obj.a)
+
+
+    // // er 
+    // function haha() {
+    //     console.log(this, 'haha');
+    // }
+    // function huidiao(diao) {
+    //     diao(); // window
+    //     obj.a() // obj
+    // }
+    // var obj = { a: haha }
+    // var obj2 = { b: huidiao }
+    // obj2.b(obj.a)
+
+    // san
+    // function haha() {
+    //     console.log(this, 'haha');
+    // }
+    // var obj = { a: haha }
+    // function huidiao(diao) {
+    //     var diao2 = obj.a;
+    //     diao2()
+    // }
+    // huidiao()
+    
+</script>
+
+</html>

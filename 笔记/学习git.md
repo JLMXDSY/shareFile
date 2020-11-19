@@ -78,12 +78,13 @@ git  branch  <branchname>  //新建分支
 git  branch  -d  <branchname>  //删除本地分支 -D 强制删除
 
 
+// 删除远程分支第一种
+git  branch  -d  -r  origin/<branchname>  //删除远程分支内容
 
-git  branch  -d  -r  <branchname>  //删除远程分支，删除后还需推送到服务器
+git  push origin :<branchname> //删除后推送至服务器（成功删除远程分支）
 
-git  push origin:<branchname> //删除后推送至服务器
-
-
+// 删除远程分支第二种
+git push origin --delete <branchname> // 直接删除远程分支
 
 git branch -m <oldbranch>  <newbranch> //重命名本地分支（移动旧分支到新分支上） -M 强制移动或重命名
 
