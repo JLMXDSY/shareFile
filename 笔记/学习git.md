@@ -480,9 +480,16 @@ git cherry-pick <commitHash>
 
 
 
-### git checkout
+### git checkout - 切换分支或恢复工作树文件
+
+
 
 ### git reset
 
 ### git revert
 
+
+
+### Options
+
+-q |--quite
