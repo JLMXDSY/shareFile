@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+</html>
+<script>
+    // 两个数组对象对比
+    var a1 = [{id:1,name:'小明',age:12},{id:2,name:'小红'},{id:3,name:'小蓝'},{id:4,name:'小黄'},{id:5,name:'小绿'}]
+    var a2 = [{id:1,name:'小明',age:13},{id:4,name:'小黄'},{id:5,name:'小绿'}]
+    function compare (ar1,ar2){
+        const comArry1 = []; // 相同取a1数组里的
+        const comArry2 = []; // 相同取a2数组里的
+        const newAr1 = []; //不同a1数组里的
+        let newAr2 = []; //不同a2数组里的
+        for(let i=0; i<ar1.length; i++){
+            var flag = false;
+            for(let j=0; j<ar2.length; j++){
+                console.log(ar1[i],'i:',i);
+                console.log(ar2[j],'j:',j);
+                if(ar1[i].id===ar2[j].id){
+                    flag = true;
+                    // 在ar2的循环里只能处理ar2，因为处理ar1的话会处理多次
+                    comArry2.push(ar2[j])
+                }
+                // 如果想得出ar2里不同的，不能在这里写，会多次添加
+                // 也就是处理里层循环的数据是困难的，但是处理外层循环的数据是方便的
+                // 。。实际业务处理可以索性只在外层循环处理，如果需要得到两个数组分别的相同和不同，可以再次调用函数，把传参调换就可以了
+                // else{
+                //     newAr2.push(ar2[j]);
+                // }
+            }
+            console.log(flag,'======')
+            if(flag) {
+                comArry1.push(ar1[i]);
+            }else{
+                newAr1.push(ar1[i]); 
+            }
+                              
+        }
+        console.log(comArry1,comArry2,newAr1,newAr2);
+    }
+    // compare(a1,a2)
+    function mergeCompare (ar1,ar2){
+        //  找出两个数组相同的或者不同的
+        const mergeArry = ar1.concat(ar2);
+        console.log('11111')
+        const diffArry=[] //去重后的数据
+        const reArry=[]; //重复的数据
+        for(let i=0;i<mergeArry.length;i++){
+            console.log(mergeArry[i],'i:',i)
+            var flag = false;
+            for(let j=0;j<diffArry.length;j++){
+                console.log(mergeArry[i].id,diffArry[j].id,'[[[[')
+                if(mergeArry[i].id !==diffArry[j].id){
+                    flag=true;
+                    diffArry.push(mergeArry[i]);
+                    console.log(diffArry,'i:',i,'j:',j)
+                }
+            }
+            if(flag){
+                diffArry[i]
+            }
+        }
+        
+    }
+    mergeCompare(a1,a2)
+</script>

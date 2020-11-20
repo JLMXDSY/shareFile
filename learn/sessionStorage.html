@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <input id="input" type="text" value="123">
+    <button id="set">存值</button>
+    <button id="get">取值</button>
+    <a href="./sessionStorage.html" target="_blank">在一个新的空窗口中装载文档</a>
+    <a href="./sessionStorage.html" target="_parent">在链接所在窗口的直接父窗口中装载文档</a>
+    <a href="./sessionStorage.html" target="_self">在链接所在的窗口中装载文档</a>
+    <a href="./sessionStorage.html" target="_search">在浏览器的搜索区装载文档</a>
+    <a href="./sessionStorage.html" target="_top">在最上层窗口中装载文档</a>
+
+</body>
+</html>
+<script>
+    var input  = document.getElementById('input');
+    var set  = document.getElementById('set');
+    var get  = document.getElementById('get');
+    
+    set.onclick= function(){
+        sessionStorage.setItem('input',input.value);
+    }
+    get.onclick= function(){
+        sessionStorage.getItem('input');
+        window.open('./sessionStorage.html','newwindow','tool'); //只要加了配置项就可以打开新窗口，不加配置项打开新标签
+    }
+    // 只有文本框失去焦点且值发生变化时触发
+    input.onchange = function(event){
+        console.log('change',event)
+    }
+    // 只要文本框内容变化就会触发
+    input.oninput = function(event){
+        console.log('input',event,input.value)
+    }
+    
+
+    
+</script>

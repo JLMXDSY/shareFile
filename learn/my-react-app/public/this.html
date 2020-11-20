@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+</body>
+
+</html>
+<script>
+    function f() {
+        return this
+    }
+    console.log(f())
+    var o = { a: 1, b: 2 }
+    var g = f.bind() //g是返回的一个和f一样的新函数，不是引用类型的地址复制
+    console.log(g(), window.f, window.g, g === f)
+
+    
+</script>

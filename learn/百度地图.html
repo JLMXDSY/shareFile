@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style type="text/css">
+        html {
+            height: 100%
+        }
+
+        body {
+            height: 100%;
+            margin: 0px;
+            padding: 0px
+        }
+
+        #container {
+            height: 100%
+        }
+    </style>
+    <script type="text/javascript"
+        src="http://api.map.baidu.com/api?v=3.0&ak=XG2OCEiODCqSmh8ymrjVlbwMwaNEN2td"></script>
+</head>
+
+<body>
+    <div id="container"></div>
+</body>
+<script>
+    var map = new BMap.Map("container");
+    var point = new BMap.Point(116.404, 39.915);
+    map.centerAndZoom(point, 15);
+    map.addControl(new BMap.NavigationControl()); //缩放控件
+    map.addControl(new BMap.ScaleControl()); //比例尺控件
+    map.addControl(new BMap.OverviewMapControl()); //缩略图控件
+    // map.addControl(new BMap.MapTypeControl()); //地图类型切换
+    // map.setCurrentCity("北京"); // 仅当设置城市信息时，MapTypeControl的切换功能才能可用 
+    // 添加定位控件
+    var geolocationControl = new BMap.GeolocationControl();
+    geolocationControl.addEventListener("locationSuccess", function (e) {
+        console.log('11111');
+        // 定位成功事件
+        var address = '';
+        address += e.addressComponent.province;
+        address += e.addressComponent.city;
+        address += e.addressComponent.district;
+        address += e.addressComponent.street;
+        address += e.addressComponent.streetNumber;
+        alert("当前定位地址为：" + address);
+    });
+    geolocationControl.addEventListener("locationError", function (e) {
+        console.log('22222');
+        // 定位失败事件
+        alert(e.message);
+    });
+    map.addControl(geolocationControl);
+
+    // 画线
+    var polyline = new BMap.Polyline([
+		new BMap.Point(116.399, 39.910),
+		new BMap.Point(116.405, 39.920),
+		new BMap.Point(116.423493, 39.907445),
+        new BMap.Point(116.399, 39.910),
+	], {strokeColor:"red", strokeWeight:4.2, strokeOpacity:0.9});
+    map.addOverlay(polyline);   //增加折线
+    
+</script>
+
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    div {
+        border: 1px solid gray;
+        /* 创建BFC解决塌陷  */
+        overflow: hidden;
+
+    }
+
+    i {
+        float: left;
+    }
+</style>
+
+<body>
+    <!-- 盒子塌陷 -->
+    <div>
+        <i>✈</i>
+    </div>
+
+    <!-- 不触发BFC，margin重叠 -->
+    </div>
+    <div style="margin: 20px; width: 100px; height: 100px; background: lightgreen;">div1</div>
+    <div style="margin: 20px; width: 100px; height: 100px; background: pink;">div2</div>
+    </div>
+    <!-- 触发BFC，margin不重叠 -->
+    <div style="margin: 20px; width: 100px; height: 100px; background: lightgreen;">div1</div>
+    <div style="overflow: hidden;">
+        <div style="margin: 20px; width: 100px; height: 100px; background: pink;">div2</div>
+    </div>
+
+    
+</body>
+
+</html>

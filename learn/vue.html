@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app"></div>
+    <div id="mount-point"></div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
+<script id='temp' type="x-template">
+    <div>
+        <H1>{{name}}</H1>
+    <div>{{total}}</div>
+    <div>{{amount}}</div>
+    </div>
+</script>
+<script>
+    var message;
+    age
+    alert(message);
+    alert(age);
+    // vm2是VueComponent() 构造的
+    // Vue.extend() vue基础构造器
+    // extend中 data必须是一个函数，要不然所有的实例会共用数据,其他属性一样
+    const Component = Vue.extend({
+        // el:'#mount-point',
+        template: '<p>我是{{name}}</p>',
+        data: function () {
+            return {
+                name: 'Vue.extend创建的实例'
+            }
+        }
+    });
+    const vm2 = new Component();
+    vm2.$mount('#mount-point'); //如果制定了el，直接就编译了，没有就会看有没有$mount
+
+    const store = {
+        state:{
+            amount:1
+        }
+    }
+
+    // vm是Vue直接构造的
+    const vm = new Vue({
+        el: '#app', // 隐式调用了vm.$mount('#app'); 提供一个在页面上已存在的 DOM 元素作为 Vue 实例的挂载目标,$el可以获取该DOM元素
+        // template:'<p>我是{{name}}实例</p>',//模板将会替换挂载元素。挂载元素的内容都将被忽略，除非模板的内容有分发插槽。
+        template: '#temp', //如果值以 # 开始，则它将被用作选择符，并使用匹配元素的 innerHTML 作为模板
+        data: {
+            name: 'new Vue创建的实例',
+            firstName: '王',
+            sencodName: '晶',
+            question: '',
+            answer: '通过你问问题能得到一个答案',
+            total:store.state.amount
+        },
+        // render: function render(createElement) { //字符串模板的代替方案，允许你发挥 JavaScript 最大的编程能力。该渲染函数接收一个 createElement 方法作为第一个参数用来创建 VNode
+        //     // 仔细看看这里 这特么用JSX不香吗？
+        //     //createElement(a,b,c); a:{String|Object|Function}标签(必填) b:{Object}标签的一些属性（可选） c:{String|Array}元素节点内容（可选）
+        //     return createElement('div', { style: { color: 'red' } }, [this.fullName2, createElement('h1', this.firstName), createElement('h1', this.sencodName)]);
+        //     // jsx
+        //     // return(
+        //     //     <div>
+        //     //         <p>
+        //     //             Ask a yes/no question:
+        //     //             <input v-model="question" />
+        //     //         </p> 
+        //     //         <p>{{ answer }}</p>
+        //     //     </div>
+        //     // )
+        //     // throw new Error('出错了')
+        // },
+        renderError(h, err) {
+            return h('p', { style: { color: 'red' } }, err.stack);
+        },
+        computed: {
+            fullName: function () {
+                return this.firstName + '' + this.sencodName; //只有getter
+            },
+            fullName2: {
+                get: function () {
+                    return this.firstName + '' + this.sencodName;
+                },
+                set: function (newVal) {
+                    let val = newVal.split('');
+                    this.firstName = val[0];
+                    this.sencodName = newVal.slice(1);
+                }
+            },
+            amount:function(){
+                return this.total; // 为保证从store读取state是响应式的，最简单的办法就是放到计算属性里
+            }
+        },
+        watch: {
+            question: function (newQuestion, oldQuestion) {
+                // 当数据question发生变化，会执行回调函数
+                this.answer = '等你停止输入。。。';
+
+            }
+        },
+        methods: {
+            getAnswer: function () {
+                this.answer = 'Thinking...';
+                axios.get('https://yesno.wtf/api').then(res => {
+                    this.answer = res.data.answer;
+                })
+            }
+        },
+        created:function(){
+            
+        },
+    });
+</script>
+
+</html>

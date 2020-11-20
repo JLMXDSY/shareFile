@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>邀你使用SSlod智能锁</title>
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/vConsole/3.3.3/vconsole.min.js"></script>
+    <script>
+        var vConsole = new VConsole();
+    </script>
+    <style>
+        html {
+            overflow-x: auto;
+            overflow-y: scroll;
+        }
+
+        body,
+        dl,
+        dt,
+        dd,
+        ul,
+        ol,
+        li,
+        pre,
+        form,
+        fieldset,
+        input,
+        p,
+        blockquote,
+        th,
+        td {
+            font-weight: 400;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            height: 100%;
+            background: #f3f3f3;
+            /*用户是否能够选中文本*/
+            /* user-select: none;  */
+            /*系统默认菜单被禁用*/
+            /* -webkit-touch-callout: none;  */
+            /* webkit浏览器 */
+            /* -webkit-user-select: none;  */
+        }
+
+        /*设置IOS页面长按不可复制粘贴，但是IOS上出现input、textarea不能输入，因此将使用-webkit-user-select:auto;*/
+        /* input,textarea {
+  -webkit-user-select:auto; 
+} */
+        h1,
+        h2,
+        h3,
+        h4,
+        h4,
+        h5 {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #f3f3f3;
+            color: #666666;
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 12px;
+            text-align: left;
+        }
+
+        select {
+            font-size: 12px;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        fieldset,
+        img {
+            border: 0none;
+        }
+
+        fieldset {
+            margin: 0;
+            padding: 0;
+        }
+
+        fieldset p {
+            margin: 0;
+            padding: 0008px;
+        }
+
+        legend {
+            display: none;
+        }
+
+        address,
+        caption,
+        em,
+        strong,
+        th,
+        i {
+            font-style: normal;
+            font-weight: 400;
+        }
+
+        table caption {
+            margin-left: -1px;
+        }
+
+
+        ol,
+        ul {
+            list-style-image: none;
+            list-style-position: outside;
+            list-style-type: none;
+        }
+
+        caption,
+        th {
+            text-align: left;
+        }
+
+        q:before,
+        q:after,
+        blockquote:before,
+        blockquote:after {
+            content: '';
+        }
+
+        /* h2统一样式 */
+        h3 {
+            margin: 50px 0 70px 40px;
+            color: #333333;
+            font-size: 44px;
+            font-weight: 400;
+            line-height: 44px;
+        }
+
+
+        .share-box {
+            width: 100%;
+            height: 100%;
+            border: 1px solid transparent;
+            box-sizing: border-box;
+            background: #6e48f7 url('https://nbyuchen.oss-cn-hangzhou.aliyuncs.com/s/141142/g/372036-6516421-1500x2412.png') no-repeat 0 0;
+            background-position: 0 0;
+            background-size: 100%;
+        }
+
+        .content .c_top {
+            display: flex;
+            justify-content: center;
+            margin-top: 0.74rem
+                /* 74/100 */
+            ;
+        }
+
+        .flex_box {
+            display: flex;
+            align-items: center;
+        }
+
+        .c_top .chat_head {
+            width: 0.5rem
+                /* 50/100 */
+            ;
+            height: 0.5rem
+                /* 50/100 */
+            ;
+            border-radius: 50%;
+            border: 2px solid #ffffff;
+
+        }
+
+        .chat_head img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+        }
+
+        .c_top p {
+            margin-left: 0.2rem
+                /* 20/100 */
+            ;
+            font-size: 0.32rem
+                /* 32/100 */
+            ;
+            color: #ffffff;
+        }
+
+        .content .tuijie {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 0.38rem
+                /* 38/100 */
+                0.68rem
+                /* 68/100 */
+                0;
+            text-align: center;
+            color: #ffffff;
+            font-size: 0.36rem
+                /* 36/100 */
+            ;
+            line-height: 1.5;
+        }
+
+        .c_center {
+            margin-top: 1.6rem
+                /* 160/100 */
+            ;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .logo {
+            width: 1.7rem
+                /* 170/100 */
+            ;
+            height: 1.7rem
+                /* 170/100 */
+            ;
+            background: url('https://nbyuchen.oss-cn-hangzhou.aliyuncs.com/s/141142/g/15875-6516422-340x340.png') no-repeat;
+            background-size: 100% 100%;
+        }
+
+        .c_center>p:nth-child(2) {
+            font-size: 0.36rem
+                /* 36/100 */
+            ;
+            color: #333333;
+            margin: 0.4rem
+                /* 40/100 */
+                0 0.26rem
+                /* 26/100 */
+            ;
+        }
+
+        .c_center>p:nth-child(3) {
+            font-size: 0.28rem
+                /* 28/100 */
+            ;
+            color: #878787;
+        }
+
+        .dakai_button {
+            width: 4.3rem
+                /* 430/100 */
+            ;
+            height: 0.8rem
+                /* 80/100 */
+            ;
+            background: -webkit-linear-gradient(top,
+                    rgb(255, 186, 58),
+                    rgb(252, 122, 41));
+            /* Safari 5.1 - 6.0 */
+            background: linear-gradient(to bottom, #febc40, #ff8031);
+            /* 标准的语法 */
+            color: #ffffff;
+            font-size: 0.34rem
+                /* 34/100 */
+            ;
+            text-align: center;
+            line-height: 0.8rem
+                /* 80/100 */
+            ;
+            border-radius: 0.9rem
+                /* 90/100 */
+            ;
+            box-shadow: 0px 5px 8px rgba(167, 131, 53, 0.5);
+            margin-top: 1.3rem
+                /* 130/100 */
+            ;
+        }
+
+        .c_floor {
+            margin-top: 1.14rem
+                /* 114/100 */
+            ;
+            font-size: 0.28rem
+                /* 28/100 */
+            ;
+            color: #d2c5ff;
+            text-align: center;
+        }
+
+        #bgzy {
+            z-index: 99999;
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            color: #ffffff;
+            background: #000000;
+            opacity: 0.7;
+            display: none;
+        }
+
+        #bgzy .img1 {
+            width: 70%;
+            position: absolute;
+            right: 0;
+            top: 0;
+            margin-top: 10%;
+            margin-right: 13%;
+        }
+
+        #bgzy .img2 {
+            width: 80%;
+            position: absolute;
+            bottom: 5%;
+            right: 10%;
+        }
+    </style>
+    <script>
+        //designWidth:设计稿的实际宽度值，需要根据实际设置
+        //maxWidth:制作稿的最大宽度值，需要根据实际设置
+        //这段js的最后面有两个参数记得要设置，一个为设计稿实际宽度，一个为制作稿最大宽度，例如设计稿为750，最大宽度为750，则为(750,750)
+        ; (function (designWidth, maxWidth) {
+            var doc = document,
+                win = window,
+                docEl = doc.documentElement,
+                remStyle = document.createElement("style"),
+                tid;
+
+            function refreshRem() {
+                var width = docEl.getBoundingClientRect().width;
+                maxWidth = maxWidth || 540;
+                width > maxWidth && (width = maxWidth);
+                var rem = width * 100 / designWidth;
+                remStyle.innerHTML = 'html{font-size:' + rem + 'px;}';
+            }
+
+            if (docEl.firstElementChild) {
+                docEl.firstElementChild.appendChild(remStyle);
+            } else {
+                var wrap = doc.createElement("div");
+                wrap.appendChild(remStyle);
+                doc.write(wrap.innerHTML);
+                wrap = null;
+            }
+            //要等 wiewport 设置好后才能执行 refreshRem，不然 refreshRem 会执行2次；
+            refreshRem();
+
+            win.addEventListener("resize", function () {
+                clearTimeout(tid); //防止执行两次
+                tid = setTimeout(refreshRem, 300);
+            }, false);
+
+            win.addEventListener("pageshow", function (e) {
+                if (e.persisted) { // 浏览器后退的时候重新计算
+                    clearTimeout(tid);
+                    tid = setTimeout(refreshRem, 300);
+                }
+            }, false);
+
+            if (doc.readyState === "complete") {
+                doc.body.style.fontSize = "16px";
+            } else {
+                doc.addEventListener("DOMContentLoaded", function (e) {
+                    doc.body.style.fontSize = "16px";
+                }, false);
+            }
+        })(750, 1200);
+    </script>
+
+</head>
+
+<body>
+    <div class="share-box">
+        <div class="content">
+            <div class="c_top">
+                <div class="flex_box">
+                    <div class="chat_head">
+                        <img src="https://nbyuchen.oss-cn-hangzhou.aliyuncs.com/s/63390/g/12587-1432886-150x150.png" />
+                    </div>
+                    <p class="touxiang"></p>
+                </div>
+            </div>
+            <p class="tuijie">我正在使用SSlod智能锁，非常好用，推荐给你!</p>
+            <div class="c_center">
+                <div class="logo"></div>
+                <p>SSlod智能锁</p>
+                <p>远程操控爱家门锁，共享出租停车位</p>
+                <div class="dakai_button" onclick="submitFn()">打开APP</div>
+            </div>
+            <p class="c_floor">App内可购买设备或连接操控设备</p>
+        </div>
+        <div id="bgzy">
+            <img class="img1"
+                src="https://nbyuchen.oss-cn-hangzhou.aliyuncs.com/s/141142/g/18750-6586502-459x292.jpg" />
+            <!-- <img class="img2" src="https://nbyuchen.oss-cn-hangzhou.aliyuncs.com/s/141142/g/3644-6586501-127x98.jpg" /> -->
+        </div>
+    </div>
+
+</body>
+<script>
+    "use strict";
+    // function getQueryString(name) {
+    //     var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+    //     var r = window.location.search.substr(1).match(reg);
+    //     if (r != null) return decodeURI(r[2]); return null;
+    //     // if (r != null) return unescape(r[2]); return null;
+    // }
+
+    // $(function () {
+    //     var userName = getQueryString('username');
+    //     var src = getQueryString('src')
+    //     $('.touxiang').text(userName)
+    //     $('.chat_head img').attr('src', src)
+    // })
+
+    // function isWeiXin() {
+    //     if (/MicroMessenger/gi.test(navigator.userAgent)) {
+    //         return true;
+    //     } else {
+    //         return false;
+    //     }
+    // }
+    function submitFn() {
+        //判断浏览器
+        var u = navigator.userAgent;
+        console.log(u);
+        var d = new Date();
+        var t0 = d.getTime();
+        if (u.indexOf('Android') > -1 || u.indexOf('Linux') > -1) {
+            // if (isWeiXin()) {
+            //     $('#bgzy').show()
+            //     return;
+            // }
+            //Android
+            if (openApp('alock://up')){
+                openApp('alock://up');
+            } else {
+                //由于打开需要1～2秒，利用这个时间差来处理－－打开app后，返回h5页面会出现页面变成app下载页面，影响用户体验
+                var delay = setInterval(function () {
+                    var d = new Date();
+                    var t1 = d.getTime();
+                    console.log(t1-t0)
+                    if (t1 - t0 < 3000 && t1 - t0 > 2000) {
+                        window.location.href = "https://nbyuchen.oss-cn-hangzhou.aliyuncs.com/s/164825/f/19567593-7009188.apk";
+                    }
+                    if (t1 - t0 >= 3000) {
+                        clearInterval(delay);
+                    }
+                }, 1000);
+            }
+        } else if (u.indexOf('iPhone') > -1) {
+            // 是不是微信 todo
+            //IOS
+            if (openApp('alock://up')) {
+                openApp('alock://up');
+            } else {
+                var delay = setInterval(function () {
+                    var d = new Date();
+                    var t1 = d.getTime();
+                    if (t1 - t0 < 3000 && t1 - t0 > 2000) {
+                        window.location.href = "https://itunes.apple.com/app/id1475742831";
+                    }
+                    if (t1 - t0 >= 3000) {
+                        clearInterval(delay);
+                    }
+                }, 1000);
+            }
+        }else if(u.indexOf('Windows')>-1){
+            // 手机浏览器选择pc模式
+            if (openApp('alock://up')){
+                openApp('alock://up');
+            } else {
+                //由于打开需要1～2秒，利用这个时间差来处理－－打开app后，返回h5页面会出现页面变成app下载页面，影响用户体验
+                var delay = setInterval(function () {
+                    var d = new Date();
+                    var t1 = d.getTime();
+                    console.log(t1-t0)
+                    if (t1 - t0 < 3000 && t1 - t0 > 2000) {
+                        window.location.href = "https://nbyuchen.oss-cn-hangzhou.aliyuncs.com/s/164825/f/19567593-7009188.apk";
+                    }
+                    if (t1 - t0 >= 3000) {
+                        clearInterval(delay);
+                    }
+                }, 1000);
+            }
+        }
+    }
+    // function openApp(src) {
+    //     // 通过iframe的方式试图打开APP，如果能正常打开，会直接切换到APP，并自动阻止a标签的默认行为
+    //     // 否则打开a标签的href链接
+    //     var ifr = document.createElement('iframe');
+    //     ifr.src = src;
+    //     ifr.style.display = 'none';
+    //     document.body.appendChild(ifr);
+    //     window.setTimeout(function () {
+    //         document.body.removeChild(ifr);
+    //     }, 2000)
+    // }
+    
+
+
+
+
+    // $('.dakai_button').on('click', function () {
+    //     var ua = navigator.userAgent.toLowerCase();
+    //     // 如果是安卓
+    //     if (isAndroid_ios()) {
+    //         // 若果是微信或qq
+    //         if (ua.match(/MicroMessenger/i) == "micromessenger" || ua.match(/QQ/i) == "qq") {
+    //             // 跳转应用宝下载界面
+    //             window.location.href = "http://a.app.qq.com/o/simple.jsp?pkgname=com.oodso.oldstreet";
+    //         }
+
+    //         openApp('alock://')
+
+    //         // 如果是苹果
+    //     } else {
+    //         // 如果是微信或qq
+    //         if (ua.match(/MicroMessenger/i) == "micromessenger" || ua.match(/QQ/i) == "qq") {
+    //             // 跳转应用宝下载界面
+    //             window.location.href = "https://itunes.apple.com/app/id1115083174";
+    //         }
+
+    //         window.location.href = "alock://"
+    //         window.setTimeout(function () {
+    //             window.location.href = "https://itunes.apple.com/app/id1115083174";
+    //         }, 2500)
+    //     }
+    // })
+
+
+    // handleNextPage = () => {
+    //     let d = new Date();
+    //     let t0 = d.getTime();
+    //     // 判断是安卓还是ios
+    //     if (isAndroid_ios()) {
+    //         if (isWeiXin()) {
+    //             // 引导用户在浏览器中打开
+    //             alert('请在浏览器中打开本链接', 3000);
+    //             // Alert.hint('请在浏览器中打开本链接', 3000);
+
+    //             return;
+    //         }
+    //         //Android
+    //         if (openApp('alock://up')) {
+    //             openApp('alock://up');
+    //         } else {
+    //             //由于打开需要1～2秒，利用这个时间差来处理－－打开app后，返回h5页面会出现页面变成app下载页面，影响用户体验
+    //             let delay = setInterval(function () {
+    //                 let d = new Date();
+    //                 let t1 = d.getTime();
+    //                 if (t1 - t0 < 3000 && t1 - t0 > 2000) {
+    //                     window.location.href = "https://fir.im/ydnc ";
+    //                 }
+    //                 if (t1 - t0 >= 3000) {
+    //                     clearInterval(delay);
+    //                 }
+    //             }, 1000);
+    //         }
+    //         // window.location.href = "alock://";
+    //         // window.setTimeout(function(){
+    //         //  Alert.hint('暂未开通，敬请期待', 1500);
+    //         //  // window.location.href = "https://itunes.apple.com/cn/app/id1419477919";//打开app下载地址，由app开发人员提供
+    //         // },2000)
+    //     } else {
+    //         if (isWeiXin()) {
+    //             window.location.href = 'https://fir.im/ydnc '
+    //             return;
+    //         }
+     
+    //         //iOS不支持iframe打开APP
+    //         window.location.href = "alock://up";
+    //         window.setTimeout(function () {
+    //             window.location.href = "https://fir.im/ydnc ";//打开app下载地址，由app开发人员提供
+    //         }, 2000)
+    //     }
+    // }
+
+    // 判断是安卓还是iOS
+    function isAndroid_ios() {
+        let u = navigator.userAgent, app = navigator.appVersion;
+        let isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1; //android终端或者uc浏览器  
+        let isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端  
+        return isAndroid == true ? true : false;
+    }
+
+    // 判断是否微信
+
+    function isWeiXin() {
+        if (/MicroMessenger/gi.test(navigator.userAgent)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    // 判断是否是qq
+
+
+    function openApp(src) {
+        // 通过iframe的方式试图打开APP，如果能正常打开，会直接切换到APP，并自动阻止a标签的默认行为
+        // 否则打开a标签的href链接
+        let ifr = document.createElement('iframe');
+        ifr.src = src;
+        ifr.style.display = 'none';
+        document.body.appendChild(ifr);
+        window.setTimeout(function () {
+            document.body.removeChild(ifr);
+        }, 2000);
+    }
+</script>
+
+</html>

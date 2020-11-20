@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="gb2312">
+  <title>Title</title>
+  <script src="common/jquery3.4.0.js"></script>
+
+</head>
+
+<body id="haha">
+
+</body>
+
+<style>
+  p {
+    font-size: 18px;
+  }
+
+  img {
+    width: 100vw;
+  }
+
+  video {
+    width: 100vw;
+  }
+</style>
+<script>
+  var a = {
+    "b": "<p style='color:red'></p >"
+  }
+
+  // console.log(a,'a');
+  // c = JSON.stringify(a)
+  // console.log(c,'c');
+  // d = JSON.parse(c);
+  // console.log(d,'d');
+
+
+  var bbb =
+  {
+    "PageContent": "&lt;div&gt;&lt;p&gt;榛橀粯鍝u0026lt;/p&gt;\n&lt;p&nbsp;style=&quot;text-align:center;&quot;&gt;&lt;img&nbsp;src=&quot;https://nbyuchen.oss-cn-hangzhou.aliyuncs.com/s/63406/g/142692-1455678-1080x1920.jpg&quot;&nbsp;/&gt;&lt;/p&gt;\n&lt;p&gt;鈥嬫垜鎯抽棶涓€涓媆u0026lt;b&gt;榛橀粯鏃犻椈&lt;/b&gt;&lt;b&gt;&lt;span&nbsp;style=&quot;color:#FF5722;&quot;&gt;鎴戞兂闂竴涓媆u0026lt;/span&gt;&lt;/b&gt;&lt;/p&gt;\n&lt;p&nbsp;style=&quot;text-align:start;&quot;&gt;&lt;video&nbsp;src=&quot;http://sandbox.api.oodso.com/home/aliyunvideo/1455680&quot;&nbsp;uri=&quot;https://nbyuchen.oss-cn-hangzhou.aliyuncs.com/s/63406/g/88812-1455679-1280x590.jpg&quot;&nbsp;controls=&quot;controls&quot;&gt;&lt;/video&gt;&lt;b&gt;&lt;span&nbsp;style=&quot;color:#FF5722;&quot;&gt;鎴戞兂闂竴涓媆u0026lt;/span&gt;&lt;/b&gt;&lt;/p&gt;\n&lt;p&nbsp;style=&quot;text-align:start;&quot;&gt;&lt;video&nbsp;src=&quot;http://sandbox.api.oodso.com/home/aliyunvideo/1455685&quot;&nbsp;uri=&quot;https://nbyuchen.oss-cn-hangzhou.aliyuncs.com/s/63406/g/98885-1455684-1080x1920.jpg&quot;&nbsp;controls=&quot;controls&quot;&gt;&lt;/video&gt;鎴戦棶涓€涓嬫垜闂竴涓媆u0026lt;b&gt;&lt;i&gt;鎴戦棶涓€涓媆u0026lt;/i&gt;&lt;/b&gt;&lt;/p&gt;\n&lt;p&nbsp;style=&quot;text-align:start;&quot;&gt;&lt;b&gt;&lt;i&gt;鈥嬫垜鎯抽棶涓€涓嬫垜闂竴涓媆u0026lt;/i&gt;&lt;/b&gt;&lt;/p&gt;\n&lt;p&nbsp;style=&quot;text-align:start;&quot;&gt;&lt;b&gt;&lt;i&gt;鈥嬫垜鐜板湪&lt;/i&gt;&lt;/b&gt;&lt;/p&gt;\n&lt;p&nbsp;style=&quot;text-align:start;&quot;&gt;&lt;img&nbsp;src=&quot;https://nbyuchen.oss-cn-hangzhou.aliyuncs.com/s/63406/g/192489-1455687-1080x1920.jpg&quot;&nbsp;/&gt;&lt;/p&gt;\n&lt;p&nbsp;style=&quot;text-align:start;&quot;&gt;&lt;b&gt;&lt;i&gt;鈥媆u0026lt;/i&gt;&lt;/b&gt;&lt;b&gt;鈥媆u0026lt;/b&gt;&lt;b&gt;鎴戦棶涓€涓嬫垜闂竴涓媆u0026lt;/b&gt;&lt;/p&gt;\n&lt;br&gt;\n&lt;p&nbsp;style=&quot;text-align:start;&quot;&gt;&lt;b&gt;&lt;span&nbsp;style=&quot;color:#FF5722;&quot;&gt;鈥媆u0026lt;/span&gt;&lt;/b&gt;&lt;/p&gt;\n&lt;p&nbsp;style=&quot;text-align:start;&quot;&gt;&lt;b&gt;&lt;span&nbsp;style=&quot;color:#FF5722;&quot;&gt;鈥媆u0026lt;/span&gt;&lt;/b&gt;&lt;/p&gt;\n&lt;p&nbsp;style=&quot;text-align:start;&quot;&gt;&lt;b&gt;&lt;span&nbsp;style=&quot;color:#FF5722;&quot;&gt;鈥媆u0026lt;/span&gt;&lt;/b&gt;&lt;/p&gt;\n&lt;br&gt;\n&lt;br&gt;\n&lt;br&gt;\n&lt;br&gt;\n&lt;br&gt;\n&lt;br&gt;\n&lt;/div&gt;"
+  }
+  var ddd = bbb.PageContent
+
+  const matchList = {
+    '&lt;': '<',
+    '&gt;': '>',
+    '&amp;': '&',
+    '&#34;': '"',
+    '&quot;': '"',
+    '&#39;': "'",
+    '&nbsp;':" ",
+    'u0026lt;':'<'
+  }
+  function HtmlFilter(text) {
+    let regStr = '(' + Object.keys(matchList).toString() + ')'
+    // ↑ ------------【*提取匹配列表key值*】.【组数转字符串】      
+    regStr = regStr.replace(/,/g, ')|(')
+    // ↑ 通过匹配将其更新为正则的字符串类型
+    const regExp = new RegExp(regStr, 'g')
+    // ↑ ------- 字符串 转 正则 方法
+    return text.replace(regExp, match => matchList[match])
+    // ↑ ------ 替换方法 (正则, 当前key => 返回当前被匹配的key值)
+  }
+  var ccc = HtmlFilter(ddd)
+  console.log(ccc)
+  var box = $('#haha')
+  box.html(ccc)
+</script>
+
+</html>

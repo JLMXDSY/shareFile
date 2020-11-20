@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://cdn.bootcss.com/axios/0.19.2/axios.min.js"></script>
+</head>
+
+<body>
+
+</body>
+<script>
+
+    // promise源码简单解析
+    // 问题：怎么控制异步的按顺序执行？
+    function MyPromise(fn) {
+        this.value;
+        this.status = 'pending';
+        this.resolveFunc = function () { };
+        this.rejectFunc = function () { };
+        fn(this.resolve.bind(this), this.reject.bind(this));
+    }
+
+    MyPromise.prototype.resolve = function (val) {
+        var self = this;
+        if (this.status == 'pending') {
+            this.status = 'resolved';
+            this.value = val;
+            setTimeout(function () {
+                self.resolveFunc(self.value);
+            }, 0);
+        }
+    }
+
+    MyPromise.prototype.reject = function (val) {
+        var self = this;
+        if (this.status == 'pending') {
+            this.status = 'rejected';
+            this.value = val;
+            setTimeout(function () {
+                self.rejectFunc(self.value);
+            }, 0);
+        }
+    }
+
+    MyPromise.prototype.then = function (resolveFunc, rejectFunc) {
+        var self = this;
+        return new MyPromise(function (resolve_next, reject_next) {
+            function resolveFuncWrap() {
+                var result = resolveFunc(self.value);
+                resolve_next(result);
+            }
+            function rejectFuncWrap() {
+                var result = rejectFunc(self.value);
+                resolve_next(result);
+            }
+            self.resolveFunc = resolveFuncWrap;
+            self.rejectFunc = rejectFuncWrap;
+        })
+    }
+
+    // 使用
+    // 答：promise()执行的时候，遇到异步任务放到任务队列，先执行.then然后把.then中的回调函数给this.resolveFcun
+    var promise = new Promise(function (resolve, reject) {
+        // 异步任务
+        var data = { url: 'kkk', method: 'api.aaa' }
+        // axios.post('www.aaaa.com', data).then(res => {
+        //     resolve();
+        // })
+        setTimeout(function () {
+            console.log('yibu');
+            resolve('随便什么数据1');
+        }, 1000);
+
+    })
+    function httpRequest() {
+        return new Promise(function (resolve, reject) {
+            // 异步任务
+            var data = { url: 'kkk', method: 'api.aaa' }
+            // axios.post('www.aaaa.com', data).then(res => {
+            //     resolve();
+            // })
+            setTimeout(function () {
+                console.log('yibu');
+                resolve({ a: 1, b: 2 });
+            }, 1000);
+        })
+    }
+    function getData() {
+        return httpRequest();
+    }
+    getData().then(res => {
+        console.log(res, '[[[')
+    });
+
+
+    promise.then(
+        res => {
+            // 下一个异步操作
+            console.log(res);
+        }
+    )
+
+    // all用法：提供了并行执行异步操作的能力，并且在所有异步操作完成后才执行回调函数 ==> 【谁跑的慢，以谁为准执行回调】。
+    // 在then里面呢，all会把所有异步操作的结果放进一个数组中传给then
+    function runAsync1() {
+        var p = new Promise(function (resolve, reject) {
+            //做一些异步操作
+            setTimeout(function () {
+                console.log('异步任务1执行完成');
+                resolve('随便什么数据1');
+            }, 1000);
+        });
+        return p;
+    }
+    function runAsync2() {
+        var p = new Promise(function (resolve, reject) {
+            //做一些异步操作
+            setTimeout(function () {
+                console.log('异步任务2执行完成');
+                resolve('随便什么数据2');
+            }, 2000);
+        });
+        return p;
+    }
+    function runAsync3() {
+        var p = new Promise(function (resolve, reject) {
+            //做一些异步操作
+            setTimeout(function () {
+                console.log('异步任务3执行完成');
+                resolve('随便什么数据3');
+            }, 2000);
+        });
+        return p;
+    }
+
+    Promise.all([runAsync1(), runAsync2(), runAsync3()]).then((res) => {
+
+    })
+    //异步任务1执行完成
+    //异步任务2执行完成
+    //异步任务3执行完成
+    //["随便什么数据1","随便什么数据2","随便什么数据3"]
+    // race用法：同样是并行异步操作，与all方法不同的是，率先完成异步操作的就立马执行回调函数 ==> 【谁跑的快，以谁为准执行回调】。
+    function runAsync1() {
+        var p = new Promise(function (resolve, reject) {
+            //做一些异步操作
+            setTimeout(function () {
+                console.log('异步任务1执行完成');
+                resolve('随便什么数据1');
+            }, 1000);
+        });
+        return p;
+    }
+    function runAsync2() {
+        var p = new Promise(function (resolve, reject) {
+            //做一些异步操作
+            setTimeout(function () {
+                console.log('异步任务2执行完成');
+                resolve('随便什么数据2');
+            }, 2000);
+        });
+        return p;
+    }
+    function runAsync3() {
+        var p = new Promise(function (resolve, reject) {
+            //做一些异步操作
+            setTimeout(function () {
+                console.log('异步任务3执行完成');
+                resolve('随便什么数据3');
+            }, 2000);
+        });
+        return p;
+    }
+
+    Promise.race([runAsync1(), runAsync2(), runAsync3()]).then((res) => {
+
+    })
+    //异步任务1执行完成
+    //随便什么数据1
+    //异步任务2执行完成
+    //异步任务3执行完成
+    // 在then里面回调开始执行时，runAsync2()和runAsync3()并未停止，仍旧再执行，于是1秒后，输给了他们的结束标志。
+
+    // 用promise完成图片的加载
+    var preloadImage = function (path) {
+        return new Promise(function (resolve, reject) {
+            var img = new Image();
+            img.onload = resolve;
+            img.onerror = reject;
+            img.src = path;
+            return 'tupian'
+        })
+    }
+    preloadImage('http://www.forestry.gov.cn/uploadfile/main/2013-6/image/2013-6-19-dbdb3e3f20b644ec959960e9d8308eda.jpg').then(function (e) {
+        console.log(e.path[0].width, e.path[0].height, this)
+
+    }).catch(() => {
+        console.log('图片加载失败')
+    })
+
+
+    //理解async await 和promise、setTimeout的特点
+    async function fn() {
+        setTimeout(console.log(2222), 1000); //setTimeout 如果这么写根本不会异步
+        await setTimeout(() => { console.log('settime3000') }, 3000); // 这么写会异步，但是await只是等待了setTime的执行。如上setTime的执行其实是同步，里面的回调才是异步，所以await无用
+        let p1 = new Promise((reslove) => {
+            setTimeout(reslove, 1000);
+        })
+        let p2 = new Promise((reslove) => {
+            setTimeout(reslove, 2000);
+        })
+        let p3 = function () {
+            return new Promise((reslove) => {
+                setTimeout(reslove, 4000);
+            })
+        }
+        const res = await p3().then(res=>{
+            console.log('p3 2000')
+        });
+
+        await p2.then(res => {
+            console.log('p2 2000');
+        })
+        await p1.then(res => {
+            console.log('p1 1000');
+        })
+
+
+    }
+    fn();
+
+
+
+
+
+
+</script>
+
+</html>
