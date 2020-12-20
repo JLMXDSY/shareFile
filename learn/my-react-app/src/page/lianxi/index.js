@@ -102,7 +102,7 @@ console.log(
   Object.keys(Point.prototype),
   Object.keys(Point1.prototype),
   p1.z,
-  p1.add()
+  p1.add(),
 );
 
 //静态方法可以从super上调用
@@ -190,7 +190,7 @@ console.log(
   ColorPoint,
   c1.miaosu,
   cp1.miaosu,
-  ColorPoint.hello
+  ColorPoint.hello,
 );
 console.log(cp1 instanceof Color, cp1 instanceof ColorPoint);
 

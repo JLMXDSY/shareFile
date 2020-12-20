@@ -30,7 +30,7 @@ class Tick extends Component {
     this.setState({ date: new Date() });
   }
   handleClick = () => {
-      console.log(this.props.children,'谁的子组件？')
+    console.log(this.props.children, "谁的子组件？");
     // this.setState()是异步的，把修改state的任务都放在队列中，等到要渲染的时候一起高效的更新了
     // this.setState({
     //   countNumber:this.state.countNumber+1
@@ -73,17 +73,17 @@ class Tick extends Component {
   componentWillUnmount() {
     clearInterval(this.timer);
   }
-  jiesoumsg= (msg) => {
+  jiesoumsg = (msg) => {
     // this.refs.test.innerText=`${msg}:${this.state.countNumber}` //用了这个后面在执行handleClick事件，setState不能渲染dom了
     let cha = Number(msg);
-    if(typeof cha==='number'){
-        this.setState({
-            countNumber:cha
-        })
-    }else {
-        alert('清输入数字呀');
+    if (typeof cha === "number") {
+      this.setState({
+        countNumber: cha,
+      });
+    } else {
+      alert("清输入数字呀");
     }
-  }
+  };
   render() {
     return (
       <div>
@@ -100,40 +100,49 @@ class Tick extends Component {
 // 事件传参
 // 父子组件通信
 
-
 // zi
 class Eventhandel extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      value:this.props.futozi,
+      value: this.props.futozi,
     };
   }
   submit = () => {
-    console.log(this.props.children,'谁的子组件==子？')
-    console.log(this.state.value,'state.value',this.refs,this.refs.shuru.value);
+    console.log(this.props.children, "谁的子组件==子？");
+    console.log(
+      this.state.value,
+      "state.value",
+      this.refs,
+      this.refs.shuru.value,
+    );
     this.props.zitofu(this.state.value); //把值传给父亲
   };
   changeHandel = (e) => {
-      console.log(e.target.value,'target.value');
-      this.setState({value:e.target.value})
+    console.log(e.target.value, "target.value");
+    this.setState({ value: e.target.value });
   };
-//   static getDerivedStateFromProps(nextProps, prevState) {
-//       if(nextProps.futozi!==prevState.value){
-//         console.log(nextProps,prevState,'React生命周期 getDerivedStateFromProps 会在调用 render 方法之前调用，并且在初始挂载及后续更新时都会被调用。它应返回一个对象来更新 state，如果返回 null 则不更新任何内容。父组件重新渲染时触发，请注意，不管原因是什么，都会在每次渲染前触发此方法。')
-//         return {value:nextProps.futozi}
-//     }else {
-//         return null;
-//     }
-//   }
-  componentWillReceiveProps(nextProps){
-      console.log(nextProps,'willreciveprops')
-    this.setState({value:nextProps.futozi}) //直接把props的值给state是不好的 这会覆盖组件内其他state的更新
+  //   static getDerivedStateFromProps(nextProps, prevState) {
+  //       if(nextProps.futozi!==prevState.value){
+  //         console.log(nextProps,prevState,'React生命周期 getDerivedStateFromProps 会在调用 render 方法之前调用，并且在初始挂载及后续更新时都会被调用。它应返回一个对象来更新 state，如果返回 null 则不更新任何内容。父组件重新渲染时触发，请注意，不管原因是什么，都会在每次渲染前触发此方法。')
+  //         return {value:nextProps.futozi}
+  //     }else {
+  //         return null;
+  //     }
+  //   }
+  componentWillReceiveProps(nextProps) {
+    console.log(nextProps, "willreciveprops");
+    this.setState({ value: nextProps.futozi }); //直接把props的值给state是不好的 这会覆盖组件内其他state的更新
   }
   render() {
     return (
       <div>
-        <input type="text" value={this.state.value} onChange={this.changeHandel} ref="shuru"/>
+        <input
+          type="text"
+          value={this.state.value}
+          onChange={this.changeHandel}
+          ref="shuru"
+        />
         <button onClick={this.submit}>submit</button>
       </div>
     );
