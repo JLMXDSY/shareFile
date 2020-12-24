@@ -2,9 +2,10 @@
 ## 项目搭建
 ### A.环境配置
 1. node环境（用npm/yarn和webpack）
-2. 全局安装vue-cli（脚手架）
+2. 全局安装vue-cli（脚手架）以下是vue-cli2.x的vue-cli3.x请参考官网[@vue/cli](https://cli.vuejs.org/zh/guide/)
 ```js
 npm install -g vue-cli 
+npm install webpack -g
 ```
 3. 搭建vue项目
 ```js
