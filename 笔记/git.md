@@ -236,6 +236,7 @@ git  remote  add  github  git@gitee.com:wangjing5676/learnGit.git  //还可以�
 
 git  clone  git@gitee.com::wangjing5676/learnGit.git [自定义名字]
 //这里的账号和密码就是你加入git仓库的用户名和邮箱，输入以后会在凭证里面存储，以后就不用验证了
+如果不对就试一下erp的账号和密码
 
 // 下面有一个注意点：如果建立了本地分支和远程分支的跟踪，那么git pull 和git fetch拉去的只是这个分支的最新内容 ，如果没有建立那么拉取的将是远程主机上的所有更新
 
@@ -389,8 +390,20 @@ git  push  gitee  master
 // 冒号可以省略，本地分支不添加表示当前分支
 
 3.  在本地创建和远程分支对应的分支，使用git  checkout  -b  gitee/<branch>  dev，本地和远程分支的名称最好一致；
+// 如果本地新建一个分支，但远程没有同名的，我们可以用下面指令来新建远程并关联
+git push --set-upstream origin/<origin-branch> <local-branch>
+// 如果远程有一个分支，但本地没有同名的，我们可以用下面指令来新建本地并关联
+git checkout --track origin/<origin-branch>
 
-4.  建立本地分支和远程分支的关联，使用git  branch  --track  gitee/<branch>  dev是创建一个新分支，并关联；git  branch  --set-upstream-to=gitee/<branch>  dev  建立本地和远程关联
+git checkout -b <newbranch> <basebranch>
+basebranch默认是当前分支，也就是基于当前分支新建一个本地分支并切换过去
+如果指定了basebranch为一个远程分支，那么就是基于远程分支新建一个本地分支并切换过去
+    
+4.  建立本地分支和远程分支的关联(这两个需要试试搞明白)
+是创建一个新分支，并关联
+git  branch  --track  gitee/<local-branch> <origin-branch>；
+建立本地和远程关联
+git  branch  --set-upstream-to=gitee/<branch>  dev  
 
 5.  从远程抓取分支，使用git  pull，如果有冲突，要先处理冲突。
 ```
