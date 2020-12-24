@@ -1,6 +1,7 @@
-const title = 'Plans for the Next Iteration of Vue.js'
+const title = "Plans for the Next Iteration of Vue.js";
 
-const content = `<p>Last week at<a href="https://vuejs.london/summary" rel="nofollow">Vue.js London</a>I gave a brief sneak peek of what’s coming in the next major version of Vue. This post provides an in-depth overview of the plan.</p>
+const content =
+  `<p>Last week at<a href="https://vuejs.london/summary" rel="nofollow">Vue.js London</a>I gave a brief sneak peek of what’s coming in the next major version of Vue. This post provides an in-depth overview of the plan.</p>
 <p><img class=" wscnph" src="https://wpimg.wallstcn.com/b8a1d7be-0b73-41b8-be8c-7c01c93cab66.png" data-wscntype="image" data-wscnh="742" data-wscnw="692" /></p>
 <h3>Why a new majorversion?</h3>
 <p>Vue 2.0 was released<a href="https://medium.com/the-vue-point/vue-2-0-is-here-ef1f26acf4b8" rel="nofollow">exactly two years ago</a>(how time flies!). During this period, the core has remained backwards compatible with five minor releases. We’ve accumulated a number of ideas that would bring improvements, but they were held off because they would result in breaking changes. At the same time, the JavaScript ecosystem and the language itself has been evolving rapidly. There are greatly improved tools that could enhance our workflow, and many new language features that could unlock simpler, more complete, and more efficient solutions to the problems Vue is trying to solve. What’s more exciting is that we are seeing ES2015 support becoming a baseline for all major evergreen browsers. Vue 3.0 aims to leverage these new language features to make Vue core smaller, faster, and more powerful.</p>
@@ -48,11 +49,11 @@ const content = `<p>Last week at<a href="https://vuejs.london/summary" rel="nofo
 <h4>7. IE11build</h4>
 <p>The last task before the final release will be the IE11 compatibility build as mentioned above.</p>
 <h4>8. FinalRelease</h4>
-<p>In all honesty, we don’t know when this will happen yet, but likely in 2019. Again, we care more about shipping something that is solid and stable rather than hitting specific dates. There is a lot of work to be done, but we are excited for what’s coming next!</p>`
+<p>In all honesty, we don’t know when this will happen yet, but likely in 2019. Again, we care more about shipping something that is solid and stable rather than hitting specific dates. There is a lot of work to be done, but we are excited for what’s coming next!</p>`;
 
 const data = {
   title,
-  content
-}
+  content,
+};
 
-export default data
+export default data;

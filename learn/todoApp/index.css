@@ -1,0 +1,7 @@
+.todo_btnbox {
+    display: flex;
+}
+.todo_btn {
+    list-style: none;
+    margin-left: 10px;
+}

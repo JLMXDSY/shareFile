@@ -1,5 +1,5 @@
-import React from 'react'
-import './index.scss';
+import React from "react";
+import "./index.scss";
 
 const STATUS_TODO = "STATUS_TODO";
 const STATUS_DOING = "STATUS_DOING";
@@ -57,10 +57,19 @@ let tasks = [
 
 class TaskItem extends React.Component {
   render() {
-    let { id, title, point, username, active, onDragEnd,onDragStart,onDragEnter } = this.props;
+    let {
+      id,
+      title,
+      point,
+      username,
+      active,
+      onDragEnd,
+      onDragStart,
+      onDragEnter,
+    } = this.props;
     return (
       <div
-        onDragStart={onDragStart.bind(this,id)}
+        onDragStart={onDragStart.bind(this, id)}
         onDragEnd={onDragEnd}
         onDragEnter={onDragEnter}
         id={`item-${id}`}
@@ -83,7 +92,7 @@ class TaskCol extends React.Component {
   };
   handleDragEnter = (e) => {
     e.preventDefault();
-    console.log('111111',this.props.canDragIn)
+    console.log("111111", this.props.canDragIn);
     if (this.props.canDragIn) {
       this.setState({
         in: true,
@@ -100,7 +109,7 @@ class TaskCol extends React.Component {
   };
   handleDrop = (e) => {
     e.preventDefault();
-    console.log('222222')
+    console.log("222222");
     this.props.dragTo(this.props.status);
     this.setState({
       in: false,
@@ -116,8 +125,7 @@ class TaskCol extends React.Component {
         onDragLeave={this.handleDragLeave}
         onDragOver={this.handleDragEnter}
         onDrop={this.handleDrop}
-        // draggable="true"
-      >
+      > // draggable="true"
         <header className="col-header">{STATUS_CODE[status]}</header>
         <main className={"col-main" + (this.state.in ? " active" : "")}>
           {children}
@@ -144,7 +152,7 @@ export default class Todo extends React.Component {
   dragTo = (status) => {
     let { tasks, activeId } = this.state;
     let task = tasks[activeId];
-    console.log(task,status)
+    console.log(task, status);
     if (task.status !== status) {
       task.status = status;
       this.setState({
@@ -159,14 +167,14 @@ export default class Todo extends React.Component {
       activeId: null,
     });
   };
-  onDragEnter = (t,index)=>{
-    console.log(t,index,'t');
+  onDragEnter = (t, index) => {
+    console.log(t, index, "t");
     // if(t.status)
   };
 
   render() {
     let { tasks, activeId } = this.state;
-    let { onDragStart, onDragEnd,onDragEnter} = this;
+    let { onDragStart, onDragEnd, onDragEnter } = this;
     return (
       <div className="task-wrapper">
         {Object.keys(STATUS_CODE).map((status) => (
@@ -178,7 +186,7 @@ export default class Todo extends React.Component {
           >
             {tasks
               .filter((t) => t.status === status)
-              .map((t,index) => (
+              .map((t, index) => (
                 <TaskItem
                   key={t.id}
                   active={t.id === activeId}
@@ -188,7 +196,7 @@ export default class Todo extends React.Component {
                   username={t.username}
                   onDragStart={onDragStart}
                   onDragEnd={onDragEnd}
-                  onDragEnter={onDragEnter.bind(null,t,index)}
+                  onDragEnter={onDragEnter.bind(null, t, index)}
                 />
               ))}
           </TaskCol>

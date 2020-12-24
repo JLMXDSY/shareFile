@@ -2,108 +2,114 @@ import React, { Component } from "react";
 
 import { Link, Route } from "react-router-dom";
 import { Layout, Menu } from "antd";
-import Drag from '../Drag';
-import Todo from '../Todo';
+import Drag from "../Drag";
+import Todo from "../Todo";
 
 import { sidebarData } from "./siderdb";
 const { Header, Content, Sider } = Layout;
 const { SubMenu, Item } = Menu;
 
-
 class About3 extends Component {
-  constructor(props){
-    super(props)
-    this.initValue = [1,10,4];
-    const sum = this.initValue.reduce((acc,cur)=>acc+cur,0)
-    this.state={
+  constructor(props) {
+    super(props);
+    this.initValue = [1, 10, 4];
+    const sum = this.initValue.reduce((acc, cur) => acc + cur, 0);
+    this.state = {
       sum,
-    }
+    };
   }
-  onUpdata = (prevalue,nextvalue)=>{
-    console.log('------',prevalue,nextvalue,this.state.sum)
-    this.setState({sum:this.state.sum+(nextvalue-prevalue)})
+  onUpdata = (prevalue, nextvalue) => {
+    console.log("------", prevalue, nextvalue, this.state.sum);
+    this.setState({ sum: this.state.sum + (nextvalue - prevalue) });
+  };
+  UNSAFE_componentWillMount() {
+    console.log("componentWillMount2:");
   }
-  UNSAFE_componentWillMount(){
-    console.log('componentWillMount2:')
+  UNSAFE_componentWillReceiveProps(nextProps) {
+    console.log("componentWillReceiveProps2:", nextProps);
   }
-  UNSAFE_componentWillReceiveProps(nextProps){
-    console.log('componentWillReceiveProps2:',nextProps)
+  shouldComponentUpdate(nextProps, nextState) {
+    console.log("shouldComponentUpdate2:", nextState.sum, this.state.sum);
+    return nextState.sum !== this.state.sum;
   }
-  shouldComponentUpdate(nextProps,nextState){
-    console.log('shouldComponentUpdate2:',nextState.sum,this.state.sum)
-    return nextState.sum!==this.state.sum;
+  UNSAFE_componentWillUpdate() {
+    console.log("componentWillUpdate2:");
   }
-  UNSAFE_componentWillUpdate(){
-    console.log('componentWillUpdate2:')
+  componentDidCatch(error, info) {
+    console.log("componentDidCatch2:", error, info);
   }
-  componentDidCatch(error,info){
-    console.log('componentDidCatch2:',error,info)
+  componentDidMount() {
+    console.log("componentDidMount2:");
   }
-  componentDidMount(){
-    console.log('componentDidMount2:')
+  componentDidUpdate() {
+    console.log("componentDidUpdate2:");
   }
-  componentDidUpdate(){
-    console.log('componentDidUpdate2:')
-  }
-  render(){
-    console.log('render2:')
+  render() {
+    console.log("render2:");
     // throw new Error('出错误了');
     return (
       <div>
         <h1>{this.state.sum}</h1>
-        {this.initValue.map((item,index)=><About4 key={index} count={item} onUpdata={this.onUpdata}/>)}
+        {this.initValue.map((item, index) =>
+          <About4 key={index} count={item} onUpdata={this.onUpdata} />
+        )}
       </div>
-    )
+    );
   }
 }
 class About4 extends Component {
-  constructor(props){
-    super(props)
-    this.state={
-      counter:this.props.count
-    }
+  constructor(props) {
+    super(props);
+    this.state = {
+      counter: this.props.count,
+    };
   }
-  onChangedata = (isAdditionOrSubtraction)=>{
+  onChangedata = (isAdditionOrSubtraction) => {
     const preCounter = this.state.counter;
-    const newCounter = isAdditionOrSubtraction?this.state.counter+1:this.state.counter-1;
-    this.props.onUpdata(preCounter,newCounter);
-    this.setState({counter:newCounter})
+    const newCounter = isAdditionOrSubtraction
+      ? this.state.counter + 1
+      : this.state.counter - 1;
+    this.props.onUpdata(preCounter, newCounter);
+    this.setState({ counter: newCounter });
+  };
+  UNSAFE_componentWillMount() {
+    console.log("componentWillMount:");
   }
-  UNSAFE_componentWillMount(){
-    console.log('componentWillMount:')
+  UNSAFE_componentWillReceiveProps(nextProps) {
+    console.log("componentWillReceiveProps:");
   }
-  UNSAFE_componentWillReceiveProps(nextProps){
-    console.log('componentWillReceiveProps:')
+  shouldComponentUpdate(nextProps, nextState) {
+    console.log(
+      "shouldComponentUpdate:",
+      nextState.counter,
+      this.state.counter,
+    );
+    return nextState.counter !== this.state.counter;
   }
-  shouldComponentUpdate(nextProps,nextState){
-    console.log('shouldComponentUpdate:',nextState.counter,this.state.counter)
-    return nextState.counter!==this.state.counter;
+  UNSAFE_componentWillUpdate() {
+    console.log("componentWillUpdate:");
   }
-  UNSAFE_componentWillUpdate(){
-    console.log('componentWillUpdate:')
+  componentDidCatch(error, info) {
+    console.log("componentDidCatch:", error, info);
   }
-  componentDidCatch(error,info){
-    console.log('componentDidCatch:',error,info)
+  componentDidMount() {
+    console.log("componentDidMount:");
   }
-  componentDidMount(){
-    console.log('componentDidMount:')
+  componentDidUpdate() {
+    console.log("componentDidUpdate:");
   }
-  componentDidUpdate(){
-    console.log('componentDidUpdate:')
-  }
-  
-  render(){
-    console.log('render:')
+
+  render() {
+    console.log("render:");
     return (
-        <div style={{ width: "1000px", height: "100px", background: "#c5f0f0" }}>
-          {this.state.counter}
-          <button onClick={this.onChangedata.bind(this,true)}>+</button>
-          <button onClick={this.onChangedata.bind(this,false)}>-</button>
-        </div>
-    )
+      <div style={{ width: "1000px", height: "100px", background: "#c5f0f0" }}>
+        {this.state.counter}
+        <button onClick={this.onChangedata.bind(this, true)}>+</button>
+        <button onClick={this.onChangedata.bind(this, false)}>-</button>
+      </div>
+    );
   }
 }
-
 
 class SiderMenu extends Component {
   handleClick = (e) => {
@@ -122,12 +128,10 @@ class SiderMenu extends Component {
         {sidebarData.map((sub_menu) => (
           <SubMenu
             key={sub_menu.key}
-            title={
-              <span>
-                {sub_menu.title.icon}
-                <span>{sub_menu.title.text}</span>
-              </span>
-            }
+            title={<span>
+              {sub_menu.title.icon}
+              <span>{sub_menu.title.text}</span>
+            </span>}
           >
             {sub_menu.children &&
               sub_menu.children.map((menu_item) => (

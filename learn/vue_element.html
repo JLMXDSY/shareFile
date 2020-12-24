@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+</head>
+
+<body>
+    <div id="app">
+        <el-tree :data="[el]" v-for="(el,index) in treeData" :check-strictly="true" show-checkbox default-expand-all
+            node-key="id" ref="tree" highlight-current :props="defaultProps" @check="(a,b)=>handleChecked(a,b,index)"
+            @check-change="(a,b,c)=>checkedChange(a,b,c,index)" @current-change="(a,b)=>currentChange(a,b,index)">
+        </el-tree>
+        <el-table :data="tableData">
+            <el-table-column label="label" prop="label">
+            </el-table-column>
+            <el-table-column label="id" prop="id">
+            </el-table-column>
+        </el-table>
+    </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<!-- 引入组件库 -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: () => {
+            return {
+
+                treeData: [
+                    {
+                        id: 1,
+                        label: '一级 1',
+                        disabled: true,
+                        children: [{
+                            id: 9,
+                            label: '三级 1-1-1'
+                        }, {
+                            id: 10,
+                            label: '三级 1-1-2'
+                        }]
+
+                    },
+                    {
+                        id: 2,
+                        label: '一级 2',
+                        disabled: true,
+                        children: [{
+                            id: 5,
+                            label: '二级 2-1'
+                        }, {
+                            id: 6,
+                            label: '二级 2-2'
+                        }]
+                    },
+                    {
+                        id: 3,
+                        label: '一级 3',
+                        disabled: true,
+                        children: [{
+                            id: 7,
+                            label: '二级 3-1'
+                        }, {
+                            id: 8,
+                            label: '二级 3-2'
+                        }]
+                    }
+                ],
+                defaultProps: {
+                    children: 'children',
+                    label: 'label'
+                },
+                tableData: [],
+                temp: new Map()
+
+            }
+        },
+        methods: {
+            handleChecked(a, b, index) {
+                // a {id: 6,label: "二级 2-2"} b {checkedKeys:[9,10],checkedNodes:[{id: 9,label: "三级 1-1-1"},{id: 10,label: "三级 1-1-2"}],halfCheckedKeys:[],halfCheckedNodes:[]}
+                
+                this.temp.set(index, a)
+                const array = Array.from(this.temp.values())
+                this.tableData = array
+                
+            },
+            checkedChange(a, b, c, index) {
+                console.log(a, b, c, index,'change')
+                
+                if (b) {
+                    this.$nextTick(() => {
+                        this.$refs.tree[index].setCheckedNodes([a])
+                    })
+                }
+
+            },
+            currentChange(a, b, index) {
+                console.log(a, b, 'current')
+                if (!b.checked) {
+                    console.log(this.$refs)
+
+                    this.temp.set(index, a)
+                    const array = Array.from(this.temp.values())
+                    this.tableData = array
+
+                    console.log(this.temp, array, 'array')
+                }
+            }
+            // console.log(a, b,index,'clickcheck')
+
+        }
+    })
+
+</script>
+
+</html>
