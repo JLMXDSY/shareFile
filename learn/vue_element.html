@@ -11,9 +11,15 @@
 
 <body>
     <div id="app">
-        <el-tree :data="[el]" v-for="(el,index) in treeData" :check-strictly="true" show-checkbox default-expand-all
-            node-key="id" ref="tree" highlight-current :props="defaultProps" @check="(a,b)=>handleChecked(a,b,index)"
-            @check-change="(a,b,c)=>checkedChange(a,b,c,index)" @current-change="(a,b)=>currentChange(a,b,index)">
+        <!-- <el-tree :data="[el]" v-for="(el,index) in treeData" :check-strictly="true" check-on-click-node show-checkbox
+            default-expand-all node-key="id" ref="tree" highlight-current :props="defaultProps"
+            @check="(a,b)=>handleChecked(a,b,index)" @check-change="(a,b,c)=>checkedChange(a,b,c,index)"
+            @current-change="(a,b)=>currentChange(a,b,index)">
+        </el-tree> -->
+        <el-tree :data="treeData" :check-strictly="true" check-on-click-node show-checkbox
+            default-expand-all node-key="id" ref="tree" highlight-current :props="defaultProps"
+            @check="(a,b)=>handleChecked(a,b)" @check-change="(a,b,c)=>checkedChange(a,b,c)"
+            @current-change="(a,b)=>currentChange(a,b)">
         </el-tree>
         <el-table :data="tableData">
             <el-table-column label="label" prop="label">
@@ -21,6 +27,7 @@
             <el-table-column label="id" prop="id">
             </el-table-column>
         </el-table>
+        
     </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
@@ -32,7 +39,6 @@
         el: '#app',
         data: () => {
             return {
-
                 treeData: [
                     {
                         id: 1,
@@ -77,43 +83,63 @@
                     label: 'label'
                 },
                 tableData: [],
+                i:0,
+                treeNodeIdArry:[],
                 temp: new Map()
 
             }
         },
+        created(){
+            this.treeData = this.digui(this.treeData)
+            console.log(this.treeData,'====')
+        },
         methods: {
-            handleChecked(a, b, index) {
+            digui(arr){
+                arr.forEach((el,index)=>{
+                    el.children.forEach((item)=>{
+                        item.productCode = index
+                    })
+                })
+                return arr
+            },
+            handleChecked(a, b) {
                 // a {id: 6,label: "二级 2-2"} b {checkedKeys:[9,10],checkedNodes:[{id: 9,label: "三级 1-1-1"},{id: 10,label: "三级 1-1-2"}],halfCheckedKeys:[],halfCheckedNodes:[]}
+                console.log(a,b,'check')
+                const index = this.treeNodeIdArry.findIndex(el=>{
+                    return el.$treeNodeId ===a.$treeNodeId
+                })
+                console.log(index);
+                this.temp.set(a.productCode,a)
+                if(index>-1){
+                    this.temp.delete(a.productCode)
+                }else{
+                    this.temp.set(a.productCode,a)
+                }
                 
-                this.temp.set(index, a)
                 const array = Array.from(this.temp.values())
+                console.log(this.temp,array)
+                this.$refs.tree.setCheckedNodes(array)
+                this.treeNodeIdArry = b.checkedNodes
                 this.tableData = array
                 
+
             },
-            checkedChange(a, b, c, index) {
-                console.log(a, b, c, index,'change')
+            checkedChange(a, b, c) {
                 
-                if (b) {
-                    this.$nextTick(() => {
-                        this.$refs.tree[index].setCheckedNodes([a])
-                    })
-                }
+                // this.i++
+                // console.log(a, b, c, this.i,'change')
+                // if(this.i%2===0){
+                //     if(b){
+                //         this.$refs.tree.setCheckedNodes([a])
+                //     }else{
+
+                //     }
+                // }
 
             },
-            currentChange(a, b, index) {
-                console.log(a, b, 'current')
-                if (!b.checked) {
-                    console.log(this.$refs)
-
-                    this.temp.set(index, a)
-                    const array = Array.from(this.temp.values())
-                    this.tableData = array
-
-                    console.log(this.temp, array, 'array')
-                }
+            currentChange(a, b) {
+                // console.log(a, b, 'current')
             }
-            // console.log(a, b,index,'clickcheck')
-
         }
     })
 
