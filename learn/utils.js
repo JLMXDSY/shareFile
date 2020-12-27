@@ -1,3 +1,4 @@
+// 生成随机字符串
 randomString(len = 10) {
     // 生成随机字符串并加上时间戳的后5位 后台会验证这个字符串10分钟之内的唯一性
     // 默认去掉了容易混淆的字符oOLl,9gq,Vv,Uu,I1
@@ -9,4 +10,38 @@ randomString(len = 10) {
       tempStr += chars.charAt(Math.floor(Math.random() * tempLen))
     }
     return tempStr + timeStamp
+}
+
+// 两个数组求重差异
+function compare (ar1,ar2){
+  const comArry1 = []; // 相同取a1数组里的
+  const comArry2 = []; // 相同取a2数组里的
+  const newAr1 = []; //不同a1数组里的
+  let newAr2 = []; //不同a2数组里的
+  for(let i=0; i<ar1.length; i++){
+      var flag = false;
+      for(let j=0; j<ar2.length; j++){
+          console.log(ar1[i],'i:',i);
+          console.log(ar2[j],'j:',j);
+          if(ar1[i].id===ar2[j].id){
+              flag = true;
+              // 在ar2的循环里只能处理ar2，因为处理ar1的话会处理多次
+              comArry2.push(ar2[j])
+          }
+          // 如果想得出ar2里不同的，不能在这里写，会多次添加
+          // 也就是处理里层循环的数据是困难的，但是处理外层循环的数据是方便的
+          // 。。实际业务处理可以索性只在外层循环处理，如果需要得到两个数组分别的相同和不同，可以再次调用函数，把传参调换就可以了
+          // else{
+          //     newAr2.push(ar2[j]);
+          // }
+      }
+      console.log(flag,'======')
+      if(flag) {
+          comArry1.push(ar1[i]);
+      }else{
+          newAr1.push(ar1[i]); 
+      }
+                        
   }
+  console.log(comArry1,comArry2,newAr1,newAr2);
+}

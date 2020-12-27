@@ -33,16 +33,15 @@
 
         }
     </style>
-    <script src="common/jquery3.4.0.js"></script>
+    
 </head>
-
 <body>
     <div class="box">
-        <!-- <img src="http://www.forestry.gov.cn/uploadfile/main/2013-6/image/2013-6-19-dbdb3e3f20b644ec959960e9d8308eda.jpg" alt=""> -->
         <div class="contain">
         </div>
     </div>
 </body>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.js"></script>
 <script>
     // 获取屏幕的宽高比
     var _screenR = window.innerWidth / window.innerHeight;
@@ -58,7 +57,7 @@
             return 'tupian'
         })
     }
-    preloadImage('image/contain.jpeg').then(function (e) {
+    preloadImage('http://www.forestry.gov.cn/uploadfile/main/2013-6/image/2013-6-19-dbdb3e3f20b644ec959960e9d8308eda.jpg').then(function (e) {
         // 获取图片的宽高比
         var imgR = e.path[0].width / e.path[0].height;
         console.log(e.path[0].width, e.path[0].height,imgR,e.target);

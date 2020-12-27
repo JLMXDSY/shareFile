@@ -35,7 +35,7 @@
 <script src="https://unpkg.com/element-ui/lib/index.js"></script>
 
 <script>
-    var app = new Vue({
+var app = new Vue({
         el: '#app',
         data: () => {
             return {
@@ -85,7 +85,8 @@
                 tableData: [],
                 i:0,
                 treeNodeIdArry:[],
-                temp: new Map()
+                temp: new Map(),
+                array: []
 
             }
         },
@@ -102,8 +103,24 @@
                 })
                 return arr
             },
+            filter(a) {
+                let flag = false;
+                this.treeNodeIdArry.map((item) => {
+                    if (item.productCode === a.productCode) {
+                        flag = true
+                        if(item.$treeNodeId === a.$treeNodeId) {
+                            flag = true
+                        } else {
+                            flag = false
+                        }
+                    } else {
+                        flag = false
+                    }
+                })
+                return flag
+            },
             handleChecked(a, b) {
-                // a {id: 6,label: "二级 2-2"} b {checkedKeys:[9,10],checkedNodes:[{id: 9,label: "三级 1-1-1"},{id: 10,label: "三级 1-1-2"}],halfCheckedKeys:[],halfCheckedNodes:[]}
+                // a {id: 6,label: "二级 2-2",$treeNodeId} b {checkedKeys:[9,10],checkedNodes:[{id: 9,label: "三级 1-1-1"},{id: 10,label: "三级 1-1-2"}],halfCheckedKeys:[],halfCheckedNodes:[]}
                 console.log(a,b,'check')
                 const index = this.treeNodeIdArry.findIndex(el=>{
                     return el.$treeNodeId ===a.$treeNodeId
@@ -115,13 +132,10 @@
                 }else{
                     this.temp.set(a.productCode,a)
                 }
-                
-                const array = Array.from(this.temp.values())
-                console.log(this.temp,array)
-                this.$refs.tree.setCheckedNodes(array)
-                this.treeNodeIdArry = b.checkedNodes
-                this.tableData = array
-                
+                var lists = Array.from(this.temp.values())
+                this.$refs.tree.setCheckedNodes(lists)
+                this.treeNodeIdArry = lists
+                this.tableData = lists
 
             },
             checkedChange(a, b, c) {
@@ -129,11 +143,11 @@
                 // this.i++
                 // console.log(a, b, c, this.i,'change')
                 // if(this.i%2===0){
-                //     if(b){
-                //         this.$refs.tree.setCheckedNodes([a])
-                //     }else{
+                    // if(b){
+                    //     this.$refs.tree.setCheckedNodes([a])
+                    // }else{
 
-                //     }
+                    // }
                 // }
 
             },

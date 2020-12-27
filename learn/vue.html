@@ -21,10 +21,6 @@
     </div>
 </script>
 <script>
-    var message;
-    age
-    alert(message);
-    alert(age);
     // vm2是VueComponent() 构造的
     // Vue.extend() vue基础构造器
     // extend中 data必须是一个函数，要不然所有的实例会共用数据,其他属性一样
@@ -59,22 +55,22 @@
             answer: '通过你问问题能得到一个答案',
             total:store.state.amount
         },
-        // render: function render(createElement) { //字符串模板的代替方案，允许你发挥 JavaScript 最大的编程能力。该渲染函数接收一个 createElement 方法作为第一个参数用来创建 VNode
-        //     // 仔细看看这里 这特么用JSX不香吗？
-        //     //createElement(a,b,c); a:{String|Object|Function}标签(必填) b:{Object}标签的一些属性（可选） c:{String|Array}元素节点内容（可选）
-        //     return createElement('div', { style: { color: 'red' } }, [this.fullName2, createElement('h1', this.firstName), createElement('h1', this.sencodName)]);
-        //     // jsx
-        //     // return(
-        //     //     <div>
-        //     //         <p>
-        //     //             Ask a yes/no question:
-        //     //             <input v-model="question" />
-        //     //         </p> 
-        //     //         <p>{{ answer }}</p>
-        //     //     </div>
-        //     // )
-        //     // throw new Error('出错了')
-        // },
+        render: function render(createElement) { //字符串模板的代替方案，允许你发挥 JavaScript 最大的编程能力。该渲染函数接收一个 createElement 方法作为第一个参数用来创建 VNode
+            // 仔细看看这里 这特么用JSX不香吗？
+            //createElement(a,b,c); a:{String|Object|Function}标签(必填) b:{Object}标签的一些属性（可选） c:{String|Array}元素节点内容（可选）
+            return createElement('div', { style: { color: 'red' } }, [this.fullName2, createElement('h1', this.firstName), createElement('h1', this.sencodName)]);
+            // jsx
+            // return(
+            //     <div>
+            //         <p>
+            //             Ask a yes/no question:
+            //             <input v-model="question" />
+            //         </p> 
+            //         <p>{{ answer }}</p>
+            //     </div>
+            // )
+            throw new Error('出错了')
+        },
         renderError(h, err) {
             return h('p', { style: { color: 'red' } }, err.stack);
         },
