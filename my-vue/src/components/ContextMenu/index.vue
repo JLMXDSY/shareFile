@@ -1,6 +1,5 @@
 <template>
   <div
-    class="hahah"
     :style="style"
     style="display: block;"
     v-show="show"
