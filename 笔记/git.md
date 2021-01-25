@@ -1,3 +1,11 @@
+
+
+
+
+
+
+
+
 # Git
 
 ## Git初次运行前的配置
@@ -121,6 +129,204 @@ Git 有三种状态，你的文件可能处于其中之一： **已修改（modi
 暂存区是一个文件，保存了下次将要提交的文件列表信息，一般在 Git 仓库目录中。 按照 Git 的术语叫做“索引”，不过一般说法还是叫“暂存区”。
 
 Git 仓库目录是 Git 用来保存项目的元数据和对象数据库的地方。 这是 Git 中最重要的部分，从其它计算机克隆仓库时，复制的就是这里的数据。
+
+### .git 目录结构详解
+
+执行`git init `会创建一个`.git`目录，这个目录包含了几乎所有Git存储和操作的东西,新初始化的`.git`目录的典型结构如下：
+
+```git
+$ ls -F1
+config            项目配置选项
+description       描述文件，仅供 GitWeb 程序使用，我们无需关心
+HEAD *            指出目前被检出的分支
+hooks/            放置包含客户端和服务端的钩子脚本
+info/             info 目录包含一个全局性排除文件， 用以放置那些不希望被记录在 .gitignore 文件中的忽略模式
+objects/ *        存储所有数据内容
+                  
+                  使用底层命令git cat-file -p SHA 可以显示文件中的内容
+refs/ *           存储指向数据（分支、远程仓库和标签等）的提交对象的指针
+index *           (待创建)保存暂存区的信息
+```
+
+#### [objects](https://git-scm.com/book/zh/v2/Git-内部原理-Git-对象)
+
+git核心部分是一个简单的键值对数据库 
+ 一个文件对应一次存储内容 
+键：一个将待存储的数据外加一个头部信息（header）一起做 SHA-1 校验运算而得的校验和
+值：该文件，校验和的前两个字符用于命名子目录，余下的 38 个字符则用作文件名。
+
+使用底层命令`git cat-file -p SHA` 可以显示文件中的内容
+
+```git
+$ git cat-file -p 96565efc1672b4f109e2f319417050eeaacc793e
+  100644 blob d66003c1ce6af913880f6a124fe4ea6ccd2424c8	.DS_Store
+  040000 tree 50cccb3d09bc94ff3e7c63872837ee6910d2c487	learn
+  040000 tree 21e739eebe0db2f66c87466d32666f46e6d665ad	my-TypeScript
+  040000 tree 2d813dcffeaaad4c0cb61163e9b6a33730b434da	my-react-app
+  040000 tree 3e7cb30a40f632e5a81f528553f478de9dd2b7eb	my-vue
+  040000 tree ec6f52a2bc00f3ee31942d44f03dd7c6d4f4c95a	"\347\254\224\350\256\260"
+  
+$ git cat-file -p 96565efc1672b4f109e2f319417050eeaacc793e > test.txt //从数据库取回文件内容
+$ cat test.txt //查看文件内容
+	version 1
+```
+
+参考官方文档我们可以了解：为什么会有索引区域这个东西存在
+
+```git
+git add 
+// 对于普通类型文件（即100644 blob数据对象）我们可以通过
+$ git hash-object -w test.txt  // 把test.txt内容存入git数据库中并显示了文件键，但是仅保存了文件内容并没有保存文件名
+	1f7a7a472abf3dd9643fd615f6da379c4acb3e3a
+// 所以有了树对象（即04000 tree），树对象每条记录含有一个指向数据对象或者子树对象的 SHA-1 指针，以及相应的模式、类型、文件名信息
+$ git cat-file -p master^{tree}
+  100644 blob a906cb2a4a904a152e80877d4088654daad0c859      README
+  100644 blob 8f94139338f9404f26296befa88755fc2598c289      Rakefile
+  040000 tree 99f1a6d12cb4b6f19c8655fca46c3ecf317074e0      lib
+// 而暂存区存在的原因就是为了创建树对象
+$ git update-index --add --cacheinfo 100644 \ 83baae61804e test.txt //把一个文件存入暂存区
+$ git write-tree //把暂存区内容写入一个树对象
+	d8329fc1cc938780ffdd9f94e0d364e0ea74f579
+	
+$ git cat-file -p d8329fc1cc938780ffdd9f94e0d364e0ea74f579
+	100644 blob 83baae61804e65cc73a7201a7252750c76066a30      test.txt
+
+$ git read-tree --prefix=bak d8329fc1cc938780ffdd9f94e0d364e0ea74f579 //把一个已知树对象读入暂存区
+$ git write-tree
+	3c4e9cd789d88d8d89c1073707c3585e41b0e614
+$ git cat-file -p 3c4e9cd789d88d8d89c1073707c3585e41b0e614
+	040000 tree d8329fc1cc938780ffdd9f94e0d364e0ea74f579     bak
+
+git commit
+//这个时候，为了不使用SHA-1，而且知道我们暂存的快照是干什么的，就有了提交对象
+$ echo 'first commit' | git commit-tree d8329f
+	fdf4fc3344e67ab068f836878b6c4951e3b15f3d
+$ git cat-file -p fdf4fc3
+	parent fbc00590a34fc0d2b4ca4942105a906ff0011233
+  tree d8329fc1cc938780ffdd9f94e0d364e0ea74f579
+  author Scott Chacon <schacon@gmail.com> 1243040974 -0700
+  committer Scott Chacon <schacon@gmail.com> 1243040974 -0700
+
+  first commit
+
+```
+
+#### [引用](https://git-scm.com/book/zh/v2/Git-内部原理-Git-引用)
+
+##### refs
+
+引用其实就是用分支名作为一个文件名来指向一个提交的SHA-1
+
+```git
+$ find .git/refs
+	.git/refs
+  .git/refs/heads // 本地新建的分支文件夹
+  .git/refs/tags // 分支标签文件夹
+  .git/refs/remotes // 远程分支文件夹
+
+```
+
+分支的本质就是：一个指向一系列提交之首的分支或着引用；如果我们想在某一个提交上创建一个分支
+
+```git
+$ git update-ref refs/heads/test cac0ca
+// 这个分支将只包含从第二个提交开始往前追溯的记录：
+$ git log --pretty=oneline test
+  cac0cab538b970a37ea1e769cbbde608743bc96d second commit
+  fdf4fc3344e67ab068f836878b6c4951e3b15f3d first commit
+```
+
+所以当运行类似于 `git branch <branch>` 这样的命令时，Git 实际上会运行 `update-ref` 命令， 取得当前所在分支最新提交对应的 SHA-1 值，并将其加入你想要创建的任何新引用中。
+
+##### HEAD
+
+现在的问题是，当你执行 `git branch <branch>` 时，Git 如何知道最新提交的 SHA-1 值呢？ 答案是 HEAD 文件。
+
+HEAD 文件通常是一个符号引用（symbolic reference），指向目前所在的分支。 所谓符号引用，表示它是一个指向其他引用的指针。
+
+然而在某些罕见的情况下，HEAD 文件可能会包含一个 git 对象的 SHA-1 值。 当你在检出一个标签、提交或远程分支，让你的仓库变成 [“分离 HEAD”](https://git-scm.com/docs/git-checkout#_detached_head)状态时，就会出现这种情况。
+
+如果查看 HEAD 文件的内容，通常我们看到类似这样的内容：
+
+```console
+$ cat .git/HEAD
+ref: refs/heads/master
+```
+
+如果执行 `git checkout test`，Git 会像这样更新 HEAD 文件：
+
+```git
+$ cat .git/HEAD
+ref: refs/heads/test
+```
+
+当我们执行 `git commit` 时，该命令会创建一个提交对象，并用 HEAD 文件中那个引用所指向的 SHA-1 值设置其父提交字段。
+
+我们还可以通过`git symbolic-ref`来安全的查看和修改`.git/HEAD`文件
+
+```git
+$ git symbolic-ref HEAD
+	refs/heads/master
+$ git symbolic-ref HEAD refs/heads/test
+$ cat .git/HEAD
+	ref: refs/heads/test
+```
+
+##### 标签引用
+
+前面我们刚讨论过 Git 的三种主要的对象类型（**数据对象**、**树对象** 和 **提交对象** ），然而实际上还有第四种。 **标签对象（tag object）** 非常类似于一个提交对象——它包含一个标签创建者信息、一个日期、一段注释信息，以及一个指针。 主要的区别在于，标签对象通常指向一个提交对象，而不是一个树对象。 它像是一个永不移动的分支引用——永远指向同一个提交对象，只不过给这个提交对象加上一个更友好的名字罢了。
+
+正如 [Git 基础](https://git-scm.com/book/zh/v2/ch00/ch02-git-basics-chapter) 中所讨论的那样，存在两种类型的标签：附注标签和轻量标签。 可以像这样创建一个轻量标签：
+
+```console
+$ git update-ref refs/tags/v1.0 cac0cab538b970a37ea1e769cbbde608743bc96d
+```
+
+这就是轻量标签的全部内容——一个固定的引用。 然而，一个附注标签则更复杂一些。 若要创建一个附注标签，Git 会创建一个标签对象，并记录一个引用来指向该标签对象，而不是直接指向提交对象。 可以通过创建一个附注标签来验证这个过程（使用 `-a` 选项）：
+
+```console
+$ git tag -a v1.1 1a410efbd13591db07496601ebc7a059dd55cfe9 -m 'test tag'
+```
+
+下面是上述过程所建标签对象的 SHA-1 值：
+
+```console
+$ cat .git/refs/tags/v1.1
+9585191f37f7b0fb9444f35a9bf50de191beadc2
+```
+
+现在对该 SHA-1 值运行 `git cat-file -p` 命令：
+
+```console
+$ git cat-file -p 9585191f37f7b0fb9444f35a9bf50de191beadc2
+object 1a410efbd13591db07496601ebc7a059dd55cfe9
+type commit
+tag v1.1
+tagger Scott Chacon <schacon@gmail.com> Sat May 23 16:48:58 2009 -0700
+
+test tag
+```
+
+我们注意到，object 条目指向我们打了标签的那个提交对象的 SHA-1 值。 另外要注意的是，标签对象并非必须指向某个提交对象；你可以对任意类型的 Git 对象打标签。 例如，在 Git 源码中，项目维护者将他们的 GPG 公钥添加为一个数据对象，然后对这个对象打了一个标签。 可以克隆一个 Git 版本库，然后通过执行下面的命令来在这个版本库中查看上述公钥：
+
+```console
+$ git cat-file blob junio-gpg-pub
+```
+
+Linux 内核版本库同样有一个不指向提交对象的标签对象——首个被创建的标签对象所指向的是最初被引入版本库的那份内核源码所对应的树对象。
+
+##### 远程引用
+
+如果查看 `refs/remotes/origin/master` 文件，可以发现 `origin` 远程版本库的 `master` 分支所对应的 SHA-1 值，就是最近一次与服务器通信时本地 `master` 分支所对应的 SHA-1 值：
+
+```console
+$ cat .git/refs/remotes/origin/master
+ca82a6dff817ec66f44342007202690a93763949
+```
+
+远程引用和分支（位于 `refs/heads` 目录下的引用）之间最主要的区别在于，远程引用是只读的。 虽然可以 `git checkout` 到某个远程引用，但是 Git 并不会将 HEAD 引用指向该远程引用。因此，你永远不能通过 `commit` 命令来更新远程引用。 Git 将这些远程引用作为记录远程服务器上各分支最后已知位置状态的书签来管理。
+
+
 
 ## Git命令参数详解
 
@@ -305,6 +511,8 @@ Git 仓库目录是 Git 用来保存项目的元数据和对象数据库的地�
 
 #### [reset](https://git-scm.com/docs/git-reset)
 
+将当前分支HEAD重置为指定状态
+
 - `git reset [--mixed | --soft | --hard | --merge | --keep] [-q] [<commit>]`
 
   该表单将当前分支头(HEAD)重置为<commit>，并可能根据<mode>更新索引（重置为<commit>的树）和工作树。如果省略<mode>，默认为--mixed。<mode>必须是以下之一。
@@ -366,6 +574,8 @@ Git 仓库目录是 Git 用来保存项目的元数据和对象数据库的地�
 
 #### [branch](https://git-scm.com/docs/git-branch)
 
+新建一个分支
+
 如果给定了--list，或者没有非选项参数，则会列出现有的分支；当前分支将以绿色高亮显示，并标有星号。在链接的工作树中签出的任何分支将以青色高亮显示，并标有加号。选项-r会导致远程跟踪分支被列出，而选项-a会同时显示本地和远程分支。
 
 如果给定了<pattern>，它将被用作shell通配符，以限制输出匹配的分支。如果给定了多个模式，如果一个分支与任何一个模式相匹配，它就会被显示出来。
@@ -379,14 +589,6 @@ Git 仓库目录是 Git 用来保存项目的元数据和对象数据库的地�
 请注意，这将创建新的分支，但不会将工作树切换到该分支上；使用 "git switch <newbranch>"来切换到新的分支。
 
 当本地分支从远程跟踪分支开始时，Git 会设置该分支（特别是 branch.<name>.remote 和 branch.<name>.merge 配置项），以便 git pull 能够适当地从远程跟踪分支合并。这个行为可以通过全局的 branch.autoSetupMerge 配置标志来改变。这个设置可以通过 --track 和 --no-track 选项被覆盖，之后再使用 git branch --set-upstream-to 来改变。
-
-使用-m或-M选项，<oldbranch>将被重命名为<newbranch>。如果 <oldbranch> 有相应的日志，它将被重命名为与 <newbranch> 相匹配，并创建一个 日志条目来记住分支的重命名。如果 <newbranch> 存在，则必须使用 -M 来强制重命名。
-
--c 和 -C 选项的语义与 -m 和 -M 完全相同，只是分支不会被重命名，而是连同它的配置和日志一起被复制到一个新的名称中。
-
-使用-d或-D选项，<branchname>将被删除。您可以指定多个分支进行删除。如果该分支当前有日志，那么日志也将被删除。
-
-使用 -r 和 -d 来删除远程跟踪分支。请注意，只有当远程仓库中的远程跟踪分支不再存在，或者 git fetch 被配置为不再获取它们时，删除远程跟踪分支才有意义。
 
 - `git branch [<options>] [-r | -a] [--merged | --no-merged]`
 
@@ -411,26 +613,30 @@ Git 仓库目录是 Git 用来保存项目的元数据和对象数据库的地�
                             设置上游分支
       --unset-upstream      删除分支的上游信息
       --color[=<when>]      用颜色区分当前、本地、远程分支，when 有三个值：always、never、auto
-      -r, --remotes         列出远程跟踪分支或者配合-d删除远程分支
+      -r, --remotes         列出远程跟踪分支或者配合-d删除远程分支 
+                            (这种删除的只是分支列表中远程分支的记录，不删除远程仓库中分支)
       --contains <commit>   print only branches that contain the commit
       --no-contains <commit>
                             print only branches that don't contain the commit
       --abbrev[=<n>]        use <n> digits to display SHA-1s
   
   Specific git-branch actions: 给定分支指令
-      -a, --all             list both remote-tracking and local branches
-      -d, --delete          删除分支，分支必须完全合并到上游分支中，
+      -a, --all             显示所有的本地分支和远程分支
+      -d, --delete          删除分支，分支必须完全合并到上游分支中
                             如果没有用--track或--set-upstream-to设置上游，则合并到HEAD中。
       -D                    强制删除分支，是 -d -f的快捷键
-      -m, --move            move/rename a branch and its reflog
+      -m, --move            使用-m或-M选项，<oldbranch>将被重命名为<newbranch>。
+                            如果 <oldbranch> 有相应的日志，它将被重命名为与 <newbranch> 相匹配
+                            并创建一个 日志条目来记住分支的重命名。
+                            如果 <newbranch> 存在，则必须使用 -M 来强制重命名。
       -M                    move/rename a branch, even if target exists
-      -c, --copy            copy a branch and its reflog
-      -C                    copy a branch, even if target exists
-      -l, --list            list branch names
-      --show-current        show current branch name
-      --create-reflog       create the branch's reflog
-      --edit-description    edit the description for the branch
-      -f, --force           force creation, move/rename, deletion
+      -c, --copy            复制一个分支及相关的日志
+      -C                    即使目标存在也能复制一个分支
+      -l, --list            分支名列表
+      --show-current        显示当前分支名
+      --create-reflog       创建分支日志
+      --edit-description    编辑分支描述
+      -f, --force           强制创建、移动/重命名、删除。
       --merged <commit>     print only branches that are merged
       --no-merged <commit>  print only branches that are not merged
       --column[=<style>]    list branches in columns
@@ -443,18 +649,287 @@ Git 仓库目录是 Git 用来保存项目的元数据和对象数据库的地�
   
 
 #### [checkout](https://git-scm.com/docs/git-checkout)
+
+切换分支或恢复工作树文件
+
+更新工作树中的文件，以匹配索引或指定树中的版本。如果没有给出路径规格，git *checkout*还将更新`HEAD`，将指定的分支设置为当前分支。
+
+- `git checkout [<options>] <branch>`
+
+- `git checkout [<options>] [<branch>] -- <file>...`
+
+  ```git 
+      -b <new_branch>       创建并切换到一个新分支
+      -B <branch>           创建/重置并切换到一个分支
+                            如果 <branch> 不存在，就会被创建；否则，就会被重置
+      -l                    创建日志给一个新分支
+      --guess               second guess 'git checkout <no-such-branch>' (default)
+      --overlay             use overlay mode (default)
+      -q, --quiet           suppress progress reporting
+      --recurse-submodules[=<checkout>]
+                            control recursive updating of submodules
+      --progress            force progress reporting
+      -m, --merge           perform a 3-way merge with the new branch
+      --conflict <style>    conflict style (merge or diff3)
+      -d, --detach          在指定提交处分离头部
+      -t, --track           设置新分支的上游信息
+      -f, --force           当切换分支时，即使索引或工作树与 HEAD 不同，也要继续。这是用来丢弃局部变化的。
+      --orphan <new-branch>
+                            new unparented branch
+      --overwrite-ignore    update ignored files (default)
+      --ignore-other-worktrees
+                            do not check if another worktree is holding the given ref
+      -2, --ours            checkout our version for unmerged files
+      -3, --theirs          checkout their version for unmerged files
+      -p, --patch           select hunks interactively
+      --ignore-skip-worktree-bits
+                            do not limit pathspecs to sparse entries only
+  ```
+
+  
+
 #### [switch](https://git-scm.com/docs/git-switch)
+
+*这个命令是试验性的。行为可能会改变。*
+
+切换到指定的分支。工作树和索引会被更新以匹配该分支。所有新提交的内容都会被添加到这个分支的顶端
+
+- `git switch [<options>] [<branch>]`
+
+  ```git 
+  		-c, --create <branch>
+                            如果有这个分支就切换，没有就创建并切换到这个新分支
+      -C, --force-create <branch>
+                            create/reset and switch to a branch
+      --guess               second guess 'git switch <no-such-branch>'
+      --discard-changes     throw away local modifications
+      -q, --quiet           suppress progress reporting
+      --recurse-submodules[=<checkout>]
+                            control recursive updating of submodules
+      --progress            force progress reporting
+      -m, --merge           perform a 3-way merge with the new branch
+      --conflict <style>    conflict style (merge or diff3)
+      -d, --detach          detach HEAD at named commit
+      -t, --track           set upstream info for new branch
+      -f, --force           force checkout (throw away local modifications)
+      --orphan <new-branch>
+                            new unparented branch
+      --overwrite-ignore    update ignored files (default)
+      --ignore-other-worktrees
+                            do not check if another worktree is holding the given ref
+  ```
+
+  
+
 #### [merge](https://git-scm.com/docs/git-merge)
 #### [mergetool](https://git-scm.com/docs/git-mergetool)
 #### [log](https://git-scm.com/docs/git-log)
 #### [stash](https://git-scm.com/docs/git-stash)
+
+把修改的内容藏在一个不维护的工作目录中
+
+- `git stash list [<options>]`
+
+  列出您当前所拥有的 stash 条目
+
+- `git stash show [<options>] [<stash>]`
+
+  将 stash 条目中记录的更改以差异的形式显示出来，与第一次创建 stash 条目时的提交内容进行对比。
+
+- `git stash drop [-q|--quiet] [<stash>]`
+
+  从暂存条目列表中删除单个暂存条目。
+
+- `git stash ( pop | apply ) [--index] [-q|--quiet] [<stash>]`
+
+  pop
+
+  从stash列表中删除单个stash状态，并将其应用在当前工作树状态之上，即进行git stash push的反向操作。工作目录必须与索引匹配。
+
+  应用状态可能会因为冲突而失败，在这种情况下，它不会从stash列表中删除。你需要手动解决冲突，之后手动调用git stash drop。
+
+  apply
+
+  和 pop 一样，但不会从 stash 列表中删除状态。与 pop 不同的是，<stash>可以是任何看起来像 stash push 或 stash create 创建的提交。
+
+- `git stash branch <branchname> [<stash>]`
+
+  创建并检查出一个名为 <branchname> 的新分支，从最初创建 <stash> 的提交开始，将 <stash> 中记录的更改应用到新的工作树和索引中。如果成功了，并且 <stash> 是 stash@{<revision>} 形式的引用，它就会丢弃 <stash>。
+
+  如果运行 git stash push 的分支发生了足够大的变化，以至于 git stash apply 由于冲突而失败，这就很有用。由于 stash 条目是应用在运行 git stash 时的 HEAD 提交之上，所以它恢复了最初的 stash 状态，没有冲突。
+
+- `git stash clear`
+
+  删除所有的储藏条目。请注意，这些条目将被修剪，并且可能无法恢复
+
+- `git stash push`
+
+  将你的本地修改保存到一个新的 stash 条目中，并将它们回滚到 HEAD（在工作树和索引中）。
+
+
+```git
+	-q, --quiet                  禁止反馈信息
+	                             这个命令仅对这些指令有效： apply, drop, pop, push, save, store
+	-a, -all                     所有被忽略和未被跟踪的文件也会被隐藏起来，然后用git clean进行清理。
+	                             这个选项只对push和save命令有效。
+```
+
+
+
 #### [tag](https://git-scm.com/docs/git-tag)
+
 #### [worktree](https://git-scm.com/docs/git-worktree)
 
 ### Sharing and Updating Projects（共享和更新项目）
 
+#### [fetch](https://git-scm.com/docs/git-fetch)
+#### [pull](https://git-scm.com/docs/git-pull)
+
+从另一个存储库或本地分支获取并与之集成
+
+将更改从远程存储库合并到当前分支。在其默认模式下，`git pull`是的缩写， `git fetch`后跟`git merge FETCH_HEAD`。
+
+更精确地讲，*git pull*使用给定的参数运行*git fetch*并调用*git merge*将检索到的分支头合并到当前分支中。使用时`--rebase`，它将运行*git rebase*而不是*git merge*。
+
+- `git pull [<options>] [<repository> [<refspec>…]]`
+
+  
+
+#### [push](https://git-scm.com/docs/git-push)
+
+使用本地(refs)引用更新远程引用(refs)，同时发送完成给定引用所需的对象。
+
+你可以在每次推送到版本库时，通过设置钩子，让有趣的事情发生在版本库中。参见 git-receive-pack[1] 的文档。
+
+当命令行没有用 <repository> 参数指定推送的位置时，会参考当前分支的 branch.*.remote 配置来决定推送的位置。如果配置缺失，则默认为 origin。
+
+当命令行没有用<refspec>...参数或--all、--mirror、--tags选项指定推送的内容时，命令会通过查阅 remote.*.push 配置来找到默认的<refspec>，如果没有找到，则尊崇push.default配置来决定推送的内容（push.default的含义参见git-config[1]）。
+
+当命令行和配置都没有指定要推送的内容时，会使用默认行为，对应于push.default的简单值：当前分支会被推送到相应的上游分支，但作为安全措施，如果上游分支与本地分支的名字不一样，推送就会中止。
+
+- `git push [<options>] [<repository> [<refspec>...]]`
+
+  ```git
+  <repository>             可以是一个GIT URls，也可以是一个远程仓库名字
+  <refspec>                指定用源对象更新目标ref，格式 [+]源对象<src>:目标ref<dst>
+                           引用规范的格式由一个可选的 + 号和紧随其后的 <src>:<dst> 组成， 
+                           + 号告诉 Git 即使在不能快进的情况下也要（强制）更新引用。
+                           其中 <src> 是一个模式（pattern），代表远程版本库中的引用；  
+                           src通常是要推送的分支名，也可以是任意的SHA表达式，例如：master~4,HEAD
+                           <dst> 是本地跟踪的远程引用的位置。
+                           默认情况下引用规范由git remote add origin自动生成
+  --all                    推送所有分支（以refs/head/为前置的），不能有其他<refspec>
+  --prune                  删除没有本地分支对应的远程分支
+  --mirror                 指定本地refs/下的所有refs都要镜像到远程仓库，例如新建、修改、删除
+  -n,--dry-run             除了真实发送更新外，其他都要演习
+  -d,--delete              所有列出的refs都要从远程仓库删除，这和git push origin :ref是一样的
+  --tags                   除了命令行明确列出的refs，其余refs/tags/下的所有refs都要被推送
+  -u,--set-upstream        给更新或推送成功的分支设置上游（跟踪）refs
+  
+  ```
+  
+  
+
+#### [remote](https://git-scm.com/docs/git-remote)
+
+管理跟踪的远程存储库
+
+```
+git remote [-v | --verbose]
+git remote add [-t <branch>] [-m <master>] [-f] [--[no-]tags] [--mirror=(fetch|push)] <name> <url>
+git remote rename <old> <new>
+git remote remove <name>
+git remote set-head <name> (-a | --auto | -d | --delete | <branch>)
+git remote set-branches [--add] <name> <branch>…
+git remote get-url [--push] [--all] <name>
+git remote set-url [--push] <name> <newurl> [<oldurl>]
+git remote set-url --add [--push] <name> <newurl>
+git remote set-url --delete [--push] <name> <url>
+git remote [-v | --verbose] show [-n] <name>…
+git remote prune [-n | --dry-run] <name>…
+git remote [-v | --verbose] update [-p | --prune] [(<group> | <remote>)…]
+```
+
+```git
+$ git remote add origin https://github.com/schacon/simplegit-progit
+```
+
+#### [submodule](https://git-scm.com/docs/git-submodule)
+
 ### Inspection and Comparison（检查和比较）
+
+#### [show](https://git-scm.com/docs/git-show)
+#### [log](https://git-scm.com/docs/git-log)
+#### [diff](https://git-scm.com/docs/git-diff)
+#### [difftool](https://git-scm.com/docs/git-difftool)
+#### [range-diff](https://git-scm.com/docs/git-range-diff)
+#### [shortlog](https://git-scm.com/docs/git-shortlog)
+#### [describe](https://git-scm.com/docs/git-describe)
 
 ### Patching（修补）
 
+#### [apply](https://git-scm.com/docs/git-apply)
+#### [cherry-pick](https://git-scm.com/docs/git-cherry-pick)
+#### [diff](https://git-scm.com/docs/git-diff)
+#### [rebase](https://git-scm.com/docs/git-rebase)
+#### [revert](https://git-scm.com/docs/git-revert)
+
 ### Debugging（调试）
+
+#### [bisect](https://git-scm.com/docs/git-bisect)
+#### [blame](https://git-scm.com/docs/git-blame)
+#### [grep](https://git-scm.com/docs/git-grep)
+
+### Administration
+
+#### [clean](https://git-scm.com/docs/git-clean)
+#### [gc](https://git-scm.com/docs/git-gc)
+#### [fsck](https://git-scm.com/docs/git-fsck)
+
+将会检查数据库的完整性。 如果使用一个 `--full` 选项运行它，它会向你显示出所有没有被其他对象指向的对象：
+
+```console
+$ git fsck --full
+Checking object directories: 100% (256/256), done.
+Checking objects: 100% (18/18), done.
+dangling blob d670460b4b4aece5915caf5c68d12f560a9fe3e4
+dangling commit ab1afef80fac8e34258ff41fc1b867c702daa24b
+dangling tree aea790b9a58f6cf6f2804eeac9f0abbe9631e4c9
+dangling blob 7108f7ecb345ee9d0084193f147cdad4d2998293
+```
+
+#### [reflog](https://git-scm.com/docs/git-reflog)
+
+当你正在工作时，Git 会默默地记录每一次你改变 HEAD 时它的值。 每一次你提交或改变分支，引用日志都会被更新
+
+为了使显示的信息更加有用，我们可以执行 `git log -g`，这个命令会以标准日志的格式输出引用日志。
+
+```git
+$ git reflog
+  1a410ef HEAD@{0}: reset: moving to 1a410ef
+  ab1afef HEAD@{1}: commit: modified repo.rb a bit
+  484a592 HEAD@{2}: commit: added repo.rb
+$ git log -g
+  commit 1a410efbd13591db07496601ebc7a059dd55cfe9
+  Reflog: HEAD@{0} (Scott Chacon <schacon@gmail.com>)
+  Reflog message: updating HEAD
+  Author: Scott Chacon <schacon@gmail.com>
+  Date:   Fri May 22 18:22:37 2009 -0700
+
+      third commit
+
+  commit ab1afef80fac8e34258ff41fc1b867c702daa24b
+  Reflog: HEAD@{1} (Scott Chacon <schacon@gmail.com>)
+  Reflog message: updating HEAD
+  Author: Scott Chacon <schacon@gmail.com>
+  Date:   Fri May 22 18:15:24 2009 -0700
+
+         modified repo.rb a bit
+```
+
+
+
+#### [filter-branch](https://git-scm.com/docs/git-filter-branch)
+#### [instaweb](https://git-scm.com/docs/git-instaweb)
+#### [archive](https://git-scm.com/docs/git-archive)
+#### [bundle](https://git-scm.com/docs/git-bundle)
