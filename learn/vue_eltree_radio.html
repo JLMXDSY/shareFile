@@ -11,11 +11,6 @@
 
 <body>
     <div id="app">
-        <!-- <el-tree :data="[el]" v-for="(el,index) in treeData" :check-strictly="true" check-on-click-node show-checkbox
-            default-expand-all node-key="id" ref="tree" highlight-current :props="defaultProps"
-            @check="(a,b)=>handleChecked(a,b,index)" @check-change="(a,b,c)=>checkedChange(a,b,c,index)"
-            @current-change="(a,b)=>currentChange(a,b,index)">
-        </el-tree> -->
         <el-tree :data="treeData" :check-strictly="true" check-on-click-node show-checkbox
             default-expand-all node-key="id" ref="tree" highlight-current :props="defaultProps"
             @check="(a,b)=>handleChecked(a,b)" @check-change="(a,b,c)=>checkedChange(a,b,c)"

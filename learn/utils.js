@@ -45,3 +45,31 @@ function compare (ar1,ar2){
   }
   console.log(comArry1,comArry2,newAr1,newAr2);
 }
+
+// 科学计数 转数字
+/**
+ * @description 科学计数法转为string
+ * @param {string, number} param
+ */
+function scientificNotationToString(param) {
+    let strParam = String(param)
+    let flag = /(e｜E)/.test(strParam)
+    if (!flag) return param
+  
+    // 指数符号 true: 正，false: 负
+    let sysbol = true
+    if (/(e-|E-)/.test(strParam)) {
+      sysbol = false
+    }
+    // 指数
+    let index = Number(strParam.match(/\d+$/)[0])
+    // 基数
+    let basis = strParam.match(/^[\d\.]+/)[0].replace(/\./, '')
+  
+    if (sysbol) {
+      return basis.padEnd(index + 1, 0)
+    } else {
+      return basis.padStart(index + basis.length, 0).replace(/^0/, '0.')
+    }
+  }
+  
